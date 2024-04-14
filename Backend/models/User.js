@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema();
+const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
   username: {
@@ -25,7 +25,7 @@ const userSchema = new Schema({
     required: true,
   },
   isAdmin: {
-    type: Array,
+    type: Boolean,
     required: true,
   },
 });
