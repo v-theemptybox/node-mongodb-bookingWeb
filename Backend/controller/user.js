@@ -49,7 +49,7 @@ exports.signIn = async (req, res, next) => {
     };
 
     // if username and password is valid
-    res.status(200).send("Sign in successful " + req.session.user.username);
+    res.status(200).send(req.session.user.username);
   } catch (error) {
     console.error("Error in sign in:", error);
     res.status(500).send("Internal Server Error");

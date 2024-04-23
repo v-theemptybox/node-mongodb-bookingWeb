@@ -1,6 +1,31 @@
+import { useEffect, useState } from "react";
 import "./propertyList.css";
 
 const PropertyList = () => {
+  const [propertyNumber, setPropertyNumber] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const request = await fetch("http://localhost:5000/api/postHotels", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            type: ["hotel", "apartment", "resort", "villas", "cabins"],
+          }),
+        });
+
+        const resData = await request.json();
+        setPropertyNumber(resData);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <div className="pList">
       <div className="pListItem">
@@ -11,7 +36,7 @@ const PropertyList = () => {
         />
         <div className="pListTitles">
           <h1>Hotels</h1>
-          <h2>233 hotels</h2>
+          <h2>{propertyNumber[0]} hotels</h2>
         </div>
       </div>
       <div className="pListItem">
@@ -22,7 +47,7 @@ const PropertyList = () => {
         />
         <div className="pListTitles">
           <h1>Apartments</h1>
-          <h2>2331 hotels</h2>
+          <h2>{propertyNumber[1]} apartments</h2>
         </div>
       </div>
       <div className="pListItem">
@@ -33,7 +58,7 @@ const PropertyList = () => {
         />
         <div className="pListTitles">
           <h1>Resorts</h1>
-          <h2>2331 hotels</h2>
+          <h2>{propertyNumber[2]} resorts</h2>
         </div>
       </div>
       <div className="pListItem">
@@ -44,7 +69,7 @@ const PropertyList = () => {
         />
         <div className="pListTitles">
           <h1>Villas</h1>
-          <h2>2331 hotels</h2>
+          <h2>{propertyNumber[3]} villas</h2>
         </div>
       </div>
       <div className="pListItem">
@@ -55,7 +80,7 @@ const PropertyList = () => {
         />
         <div className="pListTitles">
           <h1>Cabins</h1>
-          <h2>2331 hotels</h2>
+          <h2>{propertyNumber[4]} cabins</h2>
         </div>
       </div>
     </div>

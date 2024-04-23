@@ -2,18 +2,19 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const session = require("express-session");
+const bodyParser = require("body-parser");
 
 const authRoutes = require("./routes/user");
 const hotelRoutes = require("./routes/hotel");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({ credentials: true }));
 // body parser to json
-app.use(express.json());
+app.use(bodyParser.json());
 
 // Use the session middleware
-app.use(session({ secret: "secret" }));
+app.use(session({ secret: "secret", resave: false, saveUninitialized: false }));
 
 // handling non matching request from the client
 // app.use((req, res, next) => {

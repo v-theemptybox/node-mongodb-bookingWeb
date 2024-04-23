@@ -1,6 +1,6 @@
 const Hotel = require("../models/Hotel");
 
-exports.getHotels = async (req, res, next) => {
+exports.postHotels = async (req, res, next) => {
   try {
     const { cities, type, top3Rating } = req.body;
 
@@ -39,5 +39,13 @@ exports.getHotels = async (req, res, next) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.getHotelById = async (req, res, next) => {
+  try {
+    return res.status(200).json(await Hotel.findById(req.params.hotelId));
+  } catch (err) {
+    console.log(err);
   }
 };
