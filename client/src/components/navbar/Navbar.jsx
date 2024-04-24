@@ -22,7 +22,11 @@ const Navbar = () => {
           <button
             className="navButton"
             onClick={() => {
-              navigate("/register");
+              if (username) {
+                navigate("/transaction");
+              } else {
+                navigate("/register");
+              }
             }}
           >
             {username ? "Transactions" : "Register"}

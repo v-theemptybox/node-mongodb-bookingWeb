@@ -13,8 +13,8 @@ const transactionSchema = new Schema({
     required: true,
   },
   room: {
-    type: Schema.ObjectId,
-    ref: "Room",
+    type: Array,
+    // ref: "Room",
     required: true,
   },
   dateStart: {
@@ -36,6 +36,7 @@ const transactionSchema = new Schema({
   status: {
     type: String,
     required: true,
+    default: "Booked",
   },
 });
 

@@ -1,4 +1,5 @@
 const Hotel = require("../models/Hotel");
+const Room = require("../models/Room"); // must be import to use populate!!!
 
 exports.postHotels = async (req, res, next) => {
   try {
@@ -44,7 +45,9 @@ exports.postHotels = async (req, res, next) => {
 
 exports.getHotelById = async (req, res, next) => {
   try {
-    return res.status(200).json(await Hotel.findById(req.params.hotelId));
+    return res
+      .status(200)
+      .json(await Hotel.findById(req.params.hotelId).populate("rooms"));
   } catch (err) {
     console.log(err);
   }
