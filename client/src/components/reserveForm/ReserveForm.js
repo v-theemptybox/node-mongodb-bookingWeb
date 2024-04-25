@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./ReserveForm.module.css";
 import { DateRange } from "react-date-range";
 
-const ReserveForm = ({ props }) => {
+const ReserveForm = ({ props, onDataFromReserve }) => {
   const [totalCheck, setTotalCheck] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [selectedRooms, setSelectedRooms] = useState([]);
@@ -17,15 +17,31 @@ const ReserveForm = ({ props }) => {
 
   const username = localStorage.getItem("username") ?? "";
 
-  const handleCheck = (e, price, number) => {
+  useEffect(() => {
+    const sendDataToHotel = () => {
+      const startDate = state[0].startDate;
+      const endDate = state[0].endDate;
+
+      onDataFromReserve({ startDate, endDate });
+    };
+
+    sendDataToHotel();
+  }, [state]);
+
+  const handleCheck = (e, price, number, roomId) => {
     const isChecked = e.target.checked;
     if (isChecked) {
-      setSelectedRooms((prevSelectedRooms) => [...prevSelectedRooms, number]); // Thêm số vào mảng các phòng đã chọn
+      setSelectedRooms((prevSelectedRooms) => [
+        ...prevSelectedRooms,
+        { roomId: roomId, roomNumber: number },
+      ]);
       setTotalCheck((prevTotal) => prevTotal + price);
     } else {
       setSelectedRooms((prevSelectedRooms) =>
-        prevSelectedRooms.filter((roomNumber) => roomNumber !== number)
-      ); // Loại bỏ số khỏi mảng các phòng đã chọn
+        prevSelectedRooms.filter(
+          (room) => !(room.roomId === roomId && room.roomNumber === number)
+        )
+      );
       setTotalCheck((prevTotal) => prevTotal - price);
     }
   };
@@ -104,7 +120,9 @@ const ReserveForm = ({ props }) => {
                     id={`${number}`}
                     type="checkbox"
                     value={number}
-                    onChange={(e) => handleCheck(e, room.price, number)}
+                    onChange={(e) =>
+                      handleCheck(e, room.price, number, room._id)
+                    }
                   />
                 </div>
               ))}

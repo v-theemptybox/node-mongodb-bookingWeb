@@ -19,23 +19,35 @@ const Hotel = () => {
   const [open, setOpen] = useState(false);
   const [hotel, setHotel] = useState({});
   const [isOpen, setIsOpen] = useState(false);
+  const [dataFromReserve, setDataFromReserve] = useState({});
 
   let { id: hotelId } = useParams();
 
+  const handleDataFromReserve = (data) => {
+    console.log(data);
+    setDataFromReserve(data);
+  };
+
+  // console.log(dataFromReserve.startDate);
   useEffect(() => {
     const fetchData = async () => {
       try {
         const request = await fetch(
-          `http://localhost:5000/api/getHotels/${hotelId}`,
+          `http://localhost:5000/api/postHotels/${hotelId}`,
           {
-            method: "GET",
+            method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
+            body: JSON.stringify({
+              startDate: dataFromReserve.startDate,
+              endDate: dataFromReserve.endDate,
+            }),
           }
         );
 
         const resData = await request.json();
+
         setHotel(resData);
 
         return resData;
@@ -44,7 +56,7 @@ const Hotel = () => {
       }
     };
     fetchData();
-  }, [hotelId]);
+  }, [hotelId, dataFromReserve]);
 
   const handleOpen = (i) => {
     setSlideNumber(i);
@@ -140,7 +152,12 @@ const Hotel = () => {
               <button onClick={handleOpenReserve}>Reserve or Book Now!</button>
             </div>
           </div>
-          {isOpen && <ReserveForm props={hotel} />}
+          {isOpen && (
+            <ReserveForm
+              props={hotel}
+              onDataFromReserve={handleDataFromReserve}
+            />
+          )}
         </div>
         <MailList />
         <Footer />

@@ -23,7 +23,7 @@ const Transaction = () => {
           }
         );
         const resData = await request.json();
-        console.log(resData);
+        // console.log(resData);
         setTransactions(resData);
       } catch (err) {
         console.log(err);
@@ -58,8 +58,14 @@ const Transaction = () => {
             {transactions.map((transaction, index) => (
               <tr key={transaction._id}>
                 <td className={styles.td}>{index + 1}</td>
-                <td className={styles.td}>{transaction.hotel}</td>
-                <td className={styles.td}>{transaction.room.join(", ")}</td>
+                <td className={styles.td}>{transaction.hotel.name}</td>
+                <td className={styles.td}>
+                  {transaction.room
+                    .map((r) => {
+                      return r.roomNumber;
+                    })
+                    .join(", ")}
+                </td>
                 <td className={styles.td}>
                   {new Date(transaction.dateStart).toLocaleString("vi-VN", {
                     year: "2-digit",

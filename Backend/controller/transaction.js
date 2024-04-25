@@ -1,5 +1,6 @@
 const Transaction = require("../models/Transaction");
 const User = require("../models/User");
+const Hotel = require("../models/Hotel");
 
 exports.postTransaction = async (req, res, next) => {
   try {
@@ -20,7 +21,9 @@ exports.postTransactionById = async (req, res, next) => {
   try {
     const user = await User.findOne({ username: req.body.user });
 
-    const transaction = await Transaction.find({ user: user._id });
+    const transaction = await Transaction.find({ user: user._id }).populate(
+      "hotel"
+    );
     res.status(201).json(transaction);
   } catch (err) {
     console.log(err);

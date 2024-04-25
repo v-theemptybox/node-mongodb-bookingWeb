@@ -4,6 +4,6 @@ const hotelController = require("../controller/hotel");
 const router = express.Router();
 
 router.post("/postHotels", hotelController.postHotels);
-router.get("/getHotels/:hotelId", hotelController.getHotelById);
+router.post("/postHotels/:hotelId", hotelController.postHotelById);
 
 module.exports = router;
