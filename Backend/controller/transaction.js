@@ -17,6 +17,17 @@ exports.postTransaction = async (req, res, next) => {
   }
 };
 
+exports.getTransactions = async (req, res, next) => {
+  try {
+    const transactions = await Transaction.find()
+      .populate("user")
+      .populate("hotel");
+    res.status(200).json(transactions);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 exports.postTransactionById = async (req, res, next) => {
   try {
     const user = await User.findOne({ username: req.body.user });

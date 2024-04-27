@@ -50,6 +50,14 @@ const hotelSchema = new Schema({
     ],
     required: true,
   },
+  cheapestPrice: {
+    type: Number,
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("Hotel", hotelSchema);

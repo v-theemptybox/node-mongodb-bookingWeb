@@ -2,6 +2,39 @@ const Hotel = require("../models/Hotel");
 const Room = require("../models/Room"); // must be import to use populate!!!
 const Transaction = require("../models/Transaction");
 
+// Get all hotels
+exports.getHotels = async (req, res, next) => {
+  try {
+    const hotels = await Hotel.find();
+    res.status(200).json(hotels);
+  } catch (error) {
+    console.log(err);
+  }
+};
+
+exports.postHotel = async (req, res, next) => {
+  try {
+    const hotel = new Hotel({
+      name: req.body.name,
+      city: req.body.city,
+      address: req.body.address,
+      desc: req.body.desc,
+      distance: req.body.distance,
+      cheapestPrice: req.body.cheapestPrice,
+      featured: req.body.featured,
+      photos: req.body.photos,
+      rooms: req.body.rooms,
+      title: req.body.title,
+      type: req.body.type,
+      rating: req.body.rating,
+    });
+    await hotel.save();
+    res.status(201).send("Hotel created!");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 // Get hotels by filter condition
 exports.postHotels = async (req, res, next) => {
   try {

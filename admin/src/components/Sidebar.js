@@ -8,13 +8,16 @@ import {
   faTruck,
   faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+
   return (
     <>
       {/* <div className="container-fluid">
         <div className="row flex-nowrap"> */}
-      <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-white  border-end">
+      <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-white border-end">
         <div className="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
           <a
             href="/"
@@ -31,13 +34,18 @@ const Sidebar = () => {
             <li className="nav-item mt-3">
               <p className="text-secondary ">Main</p>
             </li>
-            <li className="nav-item">
-              <a href="#" className="nav-link px-0">
+            <li
+              className="nav-item"
+              onClick={() => {
+                navigate("/");
+              }}
+            >
+              <button className="nav-link px-0">
                 <FontAwesomeIcon icon={faTableColumns} />{" "}
                 <span className="ms-1 d-none d-sm-inline text-secondary">
                   Dashboard
                 </span>
-              </a>
+              </button>
             </li>
             <li className="nav-item mt-3">
               <p className="text-secondary ">List</p>
@@ -50,13 +58,18 @@ const Sidebar = () => {
                 </span>
               </a>
             </li>
-            <li className="nav-item">
-              <a href="#" className="nav-link px-0">
+            <li
+              className="nav-item"
+              onClick={() => {
+                navigate("/hotels");
+              }}
+            >
+              <button className="nav-link px-0">
                 <FontAwesomeIcon icon={faHotel} />{" "}
                 <span className="ms-1 d-none d-sm-inline text-secondary">
                   Hotels
                 </span>
-              </a>
+              </button>
             </li>
             <li className="nav-item">
               <a href="#" className="nav-link px-0">
