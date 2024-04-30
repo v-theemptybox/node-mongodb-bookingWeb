@@ -19,15 +19,17 @@ exports.postHotel = async (req, res, next) => {
       city: req.body.city,
       address: req.body.address,
       desc: req.body.desc,
-      distance: req.body.distance,
-      cheapestPrice: req.body.cheapestPrice,
+      distance: +req.body.distance,
+      cheapestPrice: +req.body.cheapestPrice,
       featured: req.body.featured,
       photos: req.body.photos,
       rooms: req.body.rooms,
       title: req.body.title,
       type: req.body.type,
-      rating: req.body.rating,
+      rating: +req.body.rating,
     });
+
+    console.log(hotel);
     await hotel.save();
     res.status(201).send("Hotel created!");
   } catch (error) {

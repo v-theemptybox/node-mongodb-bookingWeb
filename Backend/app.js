@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const authRoutes = require("./routes/user");
 const hotelRoutes = require("./routes/hotel");
 const transactionRoutes = require("./routes/transaction");
+const roomRoutes = require("./routes/room");
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use(session({ secret: "secret", resave: false, saveUninitialized: false }));
 app.use("/user", authRoutes);
 app.use("/api", hotelRoutes);
 app.use("/api", transactionRoutes);
+app.use("/api", roomRoutes);
 
 // server setup
 mongoose

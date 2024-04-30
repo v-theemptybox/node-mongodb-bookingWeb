@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import { useNavigate } from "react-router-dom";
 
-const Hotel = () => {
-  const [hotels, setHotels] = useState([]);
-
-  const navigate = useNavigate();
-
+const Room = () => {
+  const [rooms, setRooms] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const request = await fetch("http://localhost:5000/api/getHotels");
+        const request = await fetch("http://localhost:5000/api/getRooms");
         const resData = await request.json();
-        setHotels(resData);
+        setRooms(resData);
       } catch (error) {
         console.log(error);
       }
@@ -28,12 +24,7 @@ const Hotel = () => {
           <div className="mt-5 border rounded shadow text-start pt-4 px-3">
             <div className="d-flex justify-content-between">
               <h2>Latest Transactions</h2>
-              <button
-                className="border border-success rounded text-success bg-white"
-                onClick={() => {
-                  navigate("/create-hotel");
-                }}
-              >
+              <button className="border border-success rounded text-success bg-white">
                 Add New
               </button>
             </div>
@@ -41,21 +32,21 @@ const Hotel = () => {
               <thead>
                 <tr>
                   <th scope="col">ID</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Type</th>
                   <th scope="col">Title</th>
-                  <th scope="col">City</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Price</th>
+                  <th scope="col">Max People</th>
                   <th scope="col">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {hotels.map((hotel) => (
-                  <tr key={hotel._id}>
-                    <td>{hotel._id}</td>
-                    <td>{hotel.name}</td>
-                    <td>{hotel.type}</td>
-                    <td>{hotel.title}</td>
-                    <td>{hotel.city}</td>
+                {rooms.map((room) => (
+                  <tr key={room._id}>
+                    <td>{room._id}</td>
+                    <td>{room.title}</td>
+                    <td>{room.desc}</td>
+                    <td>{room.price}</td>
+                    <td>{room.maxPeople}</td>
                     <td>
                       <button className="border border-dashed border-danger text-danger bg-white rounded">
                         Delete
@@ -72,4 +63,4 @@ const Hotel = () => {
   );
 };
 
-export default Hotel;
+export default Room;

@@ -26,7 +26,7 @@ const hotelSchema = new Schema({
     type: Array,
     required: true,
   },
-  description: {
+  desc: {
     type: String,
     required: true,
   },
