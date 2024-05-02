@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const Hotel = require("../models/Hotel");
 const Room = require("../models/Room"); // must be import to use populate!!!
 const Transaction = require("../models/Transaction");
@@ -12,6 +13,7 @@ exports.getHotels = async (req, res, next) => {
   }
 };
 
+// create hotel
 exports.postHotel = async (req, res, next) => {
   try {
     const hotel = new Hotel({
@@ -32,6 +34,25 @@ exports.postHotel = async (req, res, next) => {
     console.log(hotel);
     await hotel.save();
     res.status(201).send("Hotel created!");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// delete hotel
+exports.deleteHotel = async (req, res, next) => {
+  try {
+    const hotel = await Hotel.findById(req.body.hotelId);
+
+    const transaction = await Transaction.find({ hotel });
+
+    // if has no transaction or transaction array is empty then delete hotel
+    if (!transaction || transaction.length === 0) {
+      await Hotel.deleteOne({ _id: hotel });
+      res.status(204).send("Deleted!");
+    } else {
+      res.status(405).send("Delete fail!");
+    }
   } catch (error) {
     console.log(error);
   }
@@ -92,8 +113,6 @@ exports.postHotelById = async (req, res, next) => {
     // find transaction for hotel
     const transactions = await Transaction.find({
       hotel,
-      // dateStart: { $lte: startDate },
-      // dateEnd: { $gte: endDate },
     });
 
     console.log(transactions);

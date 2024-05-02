@@ -1,20 +1,30 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
+import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 const Room = () => {
   const [rooms, setRooms] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const request = await fetch("http://localhost:5000/api/getRooms");
-        const resData = await request.json();
-        setRooms(resData);
+        const response = await fetch(
+          `http://localhost:5000/api/getRooms?page=${page}`
+        );
+        const resData = await response.json();
+        setRooms(resData.results);
+        setTotalPages(resData.totalPages);
       } catch (error) {
         console.log(error);
       }
     };
     fetchData();
-  }, []);
+  }, [page]);
+
+  const navigate = useNavigate();
 
   return (
     <div className="container-fluid">
@@ -23,8 +33,13 @@ const Room = () => {
         <main className="mt-3 col-auto col-md-9 col-xl-10">
           <div className="mt-5 border rounded shadow text-start pt-4 px-3">
             <div className="d-flex justify-content-between">
-              <h2>Latest Transactions</h2>
-              <button className="border border-success rounded text-success bg-white">
+              <h2>Rooms List</h2>
+              <button
+                className="border border-success rounded text-success bg-white"
+                onClick={() => {
+                  navigate("/create-room");
+                }}
+              >
                 Add New
               </button>
             </div>
@@ -56,6 +71,35 @@ const Room = () => {
                 ))}
               </tbody>
             </table>
+            <div className="d-flex justify-content-end">
+              <span>
+                {page} of {totalPages}
+              </span>
+              <button
+                className={`border-0 bg-white px-2 mx-1 mb-2 ${
+                  page === 1 ? "text-secondary disabled" : ""
+                }`}
+                onClick={() => {
+                  if (page !== 1) {
+                    setPage(page - 1);
+                  }
+                }}
+              >
+                <FontAwesomeIcon icon={faArrowLeft} />
+              </button>
+              <button
+                className={`border-0 bg-white px-2 mx-1 mb-2 ${
+                  page === totalPages ? "text-secondary disabled" : ""
+                }`}
+                onClick={() => {
+                  if (page !== totalPages) {
+                    setPage(page + 1);
+                  }
+                }}
+              >
+                <FontAwesomeIcon icon={faArrowRight} />
+              </button>
+            </div>
           </div>
         </main>
       </div>

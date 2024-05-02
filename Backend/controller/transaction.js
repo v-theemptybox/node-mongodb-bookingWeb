@@ -17,6 +17,7 @@ exports.postTransaction = async (req, res, next) => {
   }
 };
 
+// get all transactions
 exports.getTransactions = async (req, res, next) => {
   try {
     const transactions = await Transaction.find()

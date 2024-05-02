@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import InfoBoard from "../components/InfoBoard";
 
-const Home = () => {
+const Transaction = () => {
   const [transactions, setTransactions] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
@@ -24,9 +24,8 @@ const Home = () => {
       <div className="row flex-nowrap">
         <Sidebar />
         <main className="mt-3 col-auto col-md-9 col-xl-10">
-          <InfoBoard />
           <div className="mt-5 border rounded shadow text-start pt-4 px-3">
-            <h2>Latest Transactions</h2>
+            <h2>Transactions List</h2>
             <table className="table">
               <thead>
                 <tr>
@@ -80,4 +79,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Transaction;

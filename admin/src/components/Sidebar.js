@@ -84,7 +84,12 @@ const Sidebar = () => {
                 </span>
               </button>
             </li>
-            <li className="nav-item">
+            <li
+              className="nav-item"
+              onClick={() => {
+                navigate("/transactions");
+              }}
+            >
               <button className="nav-link px-0">
                 <FontAwesomeIcon icon={faTruck} />{" "}
                 <span className="ms-1 d-none d-sm-inline text-secondary">
@@ -108,13 +113,18 @@ const Sidebar = () => {
                 </span>
               </button>
             </li>
-            <li className="nav-item">
-              <a href="#" className="nav-link px-0">
+            <li
+              className="nav-item"
+              onClick={() => {
+                navigate("/create-room");
+              }}
+            >
+              <button href="#" className="nav-link px-0">
                 <FontAwesomeIcon icon={faBed} />{" "}
                 <span className="ms-1 d-none d-sm-inline text-secondary">
                   New Room
                 </span>
-              </a>
+              </button>
             </li>
             <li className="nav-item mt-3">
               <p className="text-secondary ">User</p>

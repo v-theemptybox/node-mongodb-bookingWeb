@@ -3,7 +3,6 @@ import List from "@mui/material/List";
 import Sidebar from "../components/Sidebar";
 
 const NewHotel = () => {
-  const [hovered, setHovered] = useState(null);
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
   const [distance, setDistance] = useState("");
@@ -14,7 +13,7 @@ const NewHotel = () => {
   const [title, setTitle] = useState("");
   const [cheapestPrice, setCheapestPrice] = useState("");
   const [featured, setFeatured] = useState("No");
-  const RATING = 5;
+  const RATING = 0;
   const [rooms, setRooms] = useState([]);
   const [selectedRooms, setSelectedRooms] = useState([]);
 
@@ -57,20 +56,6 @@ const NewHotel = () => {
 
       const resData = await request.text();
       console.log(resData);
-      // console.log(
-      //   name,
-      //   city,
-      //   address,
-      //   desc,
-      //   distance,
-      //   cheapestPrice,
-      //   featured,
-      //   photos,
-      //   selectedRooms,
-      //   title,
-      //   type,
-      //   RATING
-      // );
     } catch (error) {
       console.log(error);
     }

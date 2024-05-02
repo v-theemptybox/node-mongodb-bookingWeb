@@ -9,6 +9,9 @@ router.get("/getHotels", hotelController.getHotels);
 // create a hotel
 router.post("/createHotel", hotelController.postHotel);
 
+// delete a hotel
+router.delete("/deleteHotel", hotelController.deleteHotel);
+
 router.post("/postHotels", hotelController.postHotels);
 router.post("/postHotels/:hotelId", hotelController.postHotelById);
 
