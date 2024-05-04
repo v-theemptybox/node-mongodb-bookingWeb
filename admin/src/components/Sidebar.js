@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTableColumns,
@@ -7,11 +7,44 @@ import {
   faBed,
   faTruck,
   faRightFromBracket,
+  faRegistered,
+  faSignIn,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
+  const [user, setUser] = useState({});
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/user/session", {
+          credentials: "include",
+        });
+        const resData = await response.json();
+        setUser(resData);
+      } catch (error) {
+        console.error("Error fetching session:", error);
+      }
+    };
+    fetchSession();
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      const request = await fetch("http://localhost:5000/user/signOut", {
+        method: "POST",
+        credentials: "include",
+      });
+      const resData = await request.text();
+      console.log(resData);
+
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <>
@@ -32,7 +65,7 @@ const Sidebar = () => {
             id="menu"
           >
             <li className="nav-item mt-3">
-              <p className="text-secondary ">Main</p>
+              <p className="text-secondary">Main</p>
             </li>
             <li
               className="nav-item"
@@ -47,16 +80,47 @@ const Sidebar = () => {
                 </span>
               </button>
             </li>
+            <li
+              className="nav-item"
+              onClick={() => {
+                navigate("/signUp");
+              }}
+            >
+              <button className="nav-link px-0">
+                <FontAwesomeIcon icon={faRegistered} />{" "}
+                <span className="ms-1 d-none d-sm-inline text-secondary">
+                  Register
+                </span>
+              </button>
+            </li>
+            <li
+              className="nav-item"
+              onClick={() => {
+                navigate("/signIn");
+              }}
+            >
+              <button className="nav-link px-0">
+                <FontAwesomeIcon icon={faSignIn} />{" "}
+                <span className="ms-1 d-none d-sm-inline text-secondary">
+                  Login
+                </span>
+              </button>
+            </li>
             <li className="nav-item mt-3">
               <p className="text-secondary ">List</p>
             </li>
-            <li className="nav-item">
-              <a href="#" className="nav-link px-0">
+            <li
+              className="nav-item"
+              onClick={() => {
+                navigate("/users");
+              }}
+            >
+              <button className="nav-link px-0">
                 <FontAwesomeIcon icon={faUser} />{" "}
                 <span className="ms-1 d-none d-sm-inline text-secondary">
                   Users
                 </span>
-              </a>
+              </button>
             </li>
             <li
               className="nav-item"
@@ -129,13 +193,18 @@ const Sidebar = () => {
             <li className="nav-item mt-3">
               <p className="text-secondary ">User</p>
             </li>
-            <li className="nav-item">
-              <a href="#" className="nav-link px-0">
+            <li
+              className="nav-item"
+              onClick={() => {
+                handleSignOut();
+              }}
+            >
+              <button href="#" className="nav-link px-0">
                 <FontAwesomeIcon icon={faRightFromBracket} />{" "}
                 <span className="ms-1 d-none d-sm-inline text-secondary">
                   Logout
                 </span>
-              </a>
+              </button>
             </li>
           </ul>
           <hr />
@@ -155,22 +224,18 @@ const Sidebar = () => {
                 className="rounded-circle"
               />
               <span className="d-none d-sm-inline mx-1 text-secondary">
-                username
+                {user?.username || "username"}
               </span>
             </a>
             <ul className="dropdown-menu dropdown-menu-dark text-small shadow">
               <li>
-                <a className="dropdown-item" href="#">
-                  Profile
-                </a>
+                <button className="dropdown-item">Profile</button>
               </li>
               <li>
                 <hr className="dropdown-divider" />
               </li>
               <li>
-                <a className="dropdown-item" href="#">
-                  Sign out
-                </a>
+                <button className="dropdown-item">Sign out</button>
               </li>
             </ul>
           </div>

@@ -1,6 +1,18 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 
+// get all users
+exports.getUsers = async (req, res, next) => {
+  try {
+    const users = await User.find();
+    console.log(users);
+    res.status(200).json(users);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// sign up
 exports.signUp = async (req, res, next) => {
   try {
     const { username, password } = req.body;
@@ -26,6 +38,7 @@ exports.signUp = async (req, res, next) => {
   }
 };
 
+// sign in
 exports.signIn = async (req, res, next) => {
   try {
     const { username, password } = req.body;
@@ -43,30 +56,40 @@ exports.signIn = async (req, res, next) => {
     }
 
     // save user into session
-    req.session.user = {
-      id: user._id,
-      username: user.username,
-    };
+    req.session.user = user;
+    req.session.isLoggedIn = true;
 
     // if username and password is valid
-    res.status(200).send(req.session.user.username);
+    console.log(req.session.user);
+    res.status(200).send(req.session.user);
   } catch (error) {
     console.error("Error in sign in:", error);
     res.status(500).send("Internal Server Error");
   }
 };
 
+// get session information
+exports.getSessionInfo = async (req, res, next) => {
+  if (req.session.isLoggedIn) {
+    res.status(200).json(req.session.user);
+  } else {
+    res.status(401).end();
+  }
+};
+
 exports.signOut = async (req, res, next) => {
   try {
     // delete(destroy session)
-    req.session.destroy((err) => {
-      if (err) {
-        console.error("Error destroying session:", err);
-        return res.status(500).send("Internal Server Error");
-      }
+    if (req.session.isLoggedIn) {
+      req.session.destroy((err) => {
+        if (err) {
+          console.error("Error destroying session:", err);
+          return res.status(500).send("Internal Server Error");
+        }
 
-      res.status(200).send("Sign out successful");
-    });
+        res.status(200).send("Sign out successful");
+      });
+    }
   } catch (error) {
     console.error("Error in sign out:", error);
     res.status(500).send("Internal Server Error");

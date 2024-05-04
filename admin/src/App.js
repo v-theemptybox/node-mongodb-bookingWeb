@@ -6,9 +6,12 @@ import NewHotel from "./pages/NewHotel";
 import Room from "./pages/Room";
 import Transaction from "./pages/Transaction";
 import NewRoom from "./pages/NewRoom";
+import User from "./pages/User";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
 
 function App() {
   const router = createBrowserRouter([
@@ -35,6 +38,18 @@ function App() {
     {
       path: "/create-room",
       element: <NewRoom />,
+    },
+    {
+      path: "/users",
+      element: <User />,
+    },
+    {
+      path: "/signUp",
+      element: <Register />,
+    },
+    {
+      path: "/signIn",
+      element: <Login />,
     },
   ]);
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import List from "@mui/material/List";
 import Sidebar from "../components/Sidebar";
 import { useNavigate } from "react-router-dom";
+import Alert from "@mui/material/Alert";
 
 const NewHotel = () => {
   const [name, setName] = useState("");
@@ -17,6 +18,8 @@ const NewHotel = () => {
   const RATING = 0;
   const [rooms, setRooms] = useState([]);
   const [selectedRooms, setSelectedRooms] = useState([]);
+  const [message, setMessage] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
   const navigate = useNavigate();
 
@@ -33,34 +36,83 @@ const NewHotel = () => {
     fetchData();
   }, []);
 
+  const validateForm = () => {
+    if (
+      !name ||
+      !city ||
+      !distance ||
+      !desc ||
+      !photos ||
+      !address ||
+      !title ||
+      !cheapestPrice
+    ) {
+      console.log(
+        name +
+          "," +
+          city +
+          "," +
+          distance +
+          "," +
+          desc +
+          "," +
+          photos +
+          "," +
+          type +
+          "," +
+          address +
+          "," +
+          title +
+          "," +
+          cheapestPrice +
+          "," +
+          featured
+      );
+      showAlertMessage("Please fill in all value!");
+      return false;
+    }
+
+    return true;
+  };
+
+  const showAlertMessage = (msg) => {
+    setMessage(msg);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
+
   const handleCreateHotel = async () => {
     try {
-      const request = await fetch("http://localhost:5000/api/createHotel", {
-        method: "POST",
+      if (validateForm()) {
+        const request = await fetch("http://localhost:5000/api/createHotel", {
+          method: "POST",
 
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          city,
-          address,
-          desc,
-          distance,
-          cheapestPrice,
-          featured,
-          photos,
-          rooms: selectedRooms,
-          title,
-          type,
-          rating: RATING,
-        }),
-      });
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            city,
+            address,
+            desc,
+            distance,
+            cheapestPrice,
+            featured,
+            photos,
+            rooms: selectedRooms,
+            title,
+            type,
+            rating: RATING,
+          }),
+        });
 
-      const resData = await request.text();
-      console.log(resData);
+        const resData = await request.text();
+        console.log(resData);
 
-      navigate("/hotels");
+        navigate("/hotels");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -83,6 +135,7 @@ const NewHotel = () => {
       <div className="row flex-nowrap">
         <Sidebar />
         <main className="mt-3 col-auto col-md-9 col-xl-10">
+          {message && showAlert && <Alert severity="info">{message}</Alert>}
           <div className="mt-5 border rounded shadow text-start pt-4 px-3">
             <h2>Add New Hotel</h2>
             <form>
