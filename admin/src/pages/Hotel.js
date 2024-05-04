@@ -44,7 +44,7 @@ const Hotel = () => {
   }, [updateUI]);
 
   // confirm delete a hotel
-  const handleDeleteHotel = async (hotelId) => {
+  const handleDeleteHotel = async () => {
     try {
       handleCloseDialog();
       const response = await fetch("http://localhost:5000/api/deleteHotel", {
@@ -75,7 +75,6 @@ const Hotel = () => {
   };
 
   useEffect(() => {
-    console.log(message);
     if (message) {
       if (message === "Deleted!") {
         setSeverity("success");
@@ -94,7 +93,7 @@ const Hotel = () => {
             <Alert severity={severity}>
               {severity === "success"
                 ? "Deleted successfully!"
-                : "Delete failed!"}
+                : "Delete failed! This hotel has been included in at least one transaction"}
             </Alert>
           )}
           <div className="mt-5 border rounded shadow text-start pt-4 px-3">

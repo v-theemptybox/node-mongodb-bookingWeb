@@ -3,11 +3,36 @@ import Sidebar from "../components/Sidebar";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Alert from "@mui/material/Alert";
 
 const Room = () => {
   const [rooms, setRooms] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [deleteRoomId, setDeleteRoomId] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
+  const [message, setMessage] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+  const [updateUI, setUpdateUI] = useState(false);
+  const [severity, setSeverity] = useState("");
+
+  const navigate = useNavigate();
+
+  const handleOpenDialog = (roomId) => {
+    setDeleteRoomId(roomId);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -22,15 +47,60 @@ const Room = () => {
       }
     };
     fetchData();
-  }, [page]);
+  }, [page, updateUI]);
 
-  const navigate = useNavigate();
+  const handleDeleteRoom = async (roomId) => {
+    try {
+      handleCloseDialog();
+      const response = await fetch("http://localhost:5000/api/deleteRoom", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          roomId: deleteRoomId,
+        }),
+      });
+
+      if (response.ok) {
+        setMessage("Deleted!");
+      } else {
+        setMessage(await response.text());
+      }
+
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
+
+      setUpdateUI(!updateUI);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (message) {
+      if (message === "Deleted!") {
+        setSeverity("success");
+      } else if (message === "Delete fail!") {
+        setSeverity("error");
+      }
+    }
+  }, [message]);
 
   return (
     <div className="container-fluid">
       <div className="row flex-nowrap">
         <Sidebar />
         <main className="mt-3 col-auto col-md-9 col-xl-10">
+          {message && showAlert && (
+            <Alert severity={severity}>
+              {severity === "success"
+                ? "Deleted successfully!"
+                : "Delete failed! This room has existed in at least one transaction or one hotel"}
+            </Alert>
+          )}
           <div className="mt-5 border rounded shadow text-start pt-4 px-3">
             <div className="d-flex justify-content-between">
               <h2>Rooms List</h2>
@@ -63,7 +133,12 @@ const Room = () => {
                     <td>{room.price}</td>
                     <td>{room.maxPeople}</td>
                     <td>
-                      <button className="border border-dashed border-danger text-danger bg-white rounded">
+                      <button
+                        className="border border-dashed border-danger text-danger bg-white rounded"
+                        onClick={() => {
+                          handleOpenDialog(room._id);
+                        }}
+                      >
                         Delete
                       </button>
                     </td>
@@ -103,6 +178,20 @@ const Room = () => {
           </div>
         </main>
       </div>
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle id="alert-dialog-title">{"Delete item"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Do you want to delete this item?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteRoom} className="text-danger">
+            Yes
+          </Button>
+          <Button onClick={handleCloseDialog}>No</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

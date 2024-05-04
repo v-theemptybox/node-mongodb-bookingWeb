@@ -3,6 +3,9 @@ const transactionController = require("../controller/transaction");
 
 const router = express.Router();
 
+// get reports
+router.get("/getReports", transactionController.getReports);
+
 // create transaction
 router.post("/postTransaction", transactionController.postTransaction);
 // get transaction by id

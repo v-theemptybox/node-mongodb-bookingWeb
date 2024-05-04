@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import List from "@mui/material/List";
 import Sidebar from "../components/Sidebar";
+import { useNavigate } from "react-router-dom";
 
 const NewHotel = () => {
   const [name, setName] = useState("");
@@ -12,17 +13,19 @@ const NewHotel = () => {
   const [address, setAddress] = useState("");
   const [title, setTitle] = useState("");
   const [cheapestPrice, setCheapestPrice] = useState("");
-  const [featured, setFeatured] = useState("No");
+  const [featured, setFeatured] = useState(false);
   const RATING = 0;
   const [rooms, setRooms] = useState([]);
   const [selectedRooms, setSelectedRooms] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const request = await fetch("http://localhost:5000/api/getRooms");
         const resData = await request.json();
-        setRooms(resData);
+        setRooms(resData.rooms);
       } catch (error) {
         console.log(error);
       }
@@ -56,6 +59,8 @@ const NewHotel = () => {
 
       const resData = await request.text();
       console.log(resData);
+
+      navigate("/hotels");
     } catch (error) {
       console.log(error);
     }

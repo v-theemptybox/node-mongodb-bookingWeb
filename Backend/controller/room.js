@@ -13,6 +13,7 @@ exports.getRooms = async (req, res, next) => {
     const results = paging(rooms, PAGE_SIZE, page);
 
     res.status(200).json({
+      rooms,
       results,
       page,
       totalPages: Math.ceil(rooms.length / PAGE_SIZE),
@@ -44,14 +45,20 @@ exports.postRoom = async (req, res, next) => {
 exports.deleteRoom = async (req, res, next) => {
   try {
     const roomId = req.body.roomId;
-    const transaction = Transaction.find(
-      {},
-      { rooms: { $elemMatch: { roomId } } }
-    );
+    const transaction = await Transaction.find({
+      "room.roomId": roomId,
+    });
+    const hotel = await Hotel.find({ rooms: roomId });
 
-    console.log(transaction);
-    // await Room.deleteOne({ _id: roomId });
-    // res.status(200).send("Deleted!");
+    if (
+      (!transaction || transaction.length === 0) &&
+      (!hotel || hotel.length === 0)
+    ) {
+      await Room.deleteOne({ _id: roomId });
+      res.status(204).send("Deleted!");
+    } else {
+      res.status(405).send("Delete fail!");
+    }
   } catch (error) {
     console.log(error);
   }
