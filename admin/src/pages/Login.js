@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const Login = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: email,
+          username: username,
           password: password,
         }),
       });
@@ -44,10 +44,10 @@ const Login = () => {
                   <label className="form-label">Username: </label>
                   <input
                     className="form-control"
-                    type="email"
-                    value={email}
+                    type="text"
+                    value={username}
                     onChange={(e) => {
-                      setEmail(e.target.value);
+                      setUsername(e.target.value);
                     }}
                   />
                 </div>

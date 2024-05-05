@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Alert from "@mui/material/Alert";
 
 const NewRoom = () => {
@@ -13,6 +13,30 @@ const NewRoom = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   const navigate = useNavigate();
+  const { roomId } = useParams();
+
+  // if roomId params exist then update room
+  useEffect(() => {
+    if (roomId) {
+      // Fetch thông tin phòng từ API khi component được load
+      const fetchRoom = async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:5000/api/getRoom/${roomId}`
+          );
+          const roomData = await response.json();
+          setTitle(roomData.title);
+          setDesc(roomData.desc);
+          setPrice(roomData.price);
+          setMaxPeople(roomData.maxPeople);
+          setRoomNumbers(roomData.roomNumbers);
+        } catch (error) {
+          console.error("Error fetching room data:", error);
+        }
+      };
+      fetchRoom();
+    }
+  }, [roomId]);
 
   const validateForm = () => {
     if (!title || !price || !roomNumbers || !desc || !maxPeople) {
@@ -44,6 +68,7 @@ const NewRoom = () => {
     }, 3000);
   };
 
+  // create new room
   const handleCreateRoom = async () => {
     try {
       if (validateForm()) {
@@ -70,6 +95,35 @@ const NewRoom = () => {
     }
   };
 
+  // update room
+  const handleUpdateRoom = async () => {
+    try {
+      if (validateForm()) {
+        const request = await fetch(
+          `http://localhost:5000/api/editRoom/${roomId}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title,
+              desc,
+              price,
+              maxPeople,
+              roomNumbers,
+            }),
+          }
+        );
+        const resData = await request.text();
+        console.log(resData);
+        navigate("/rooms");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="container-fluid">
       <div className="row flex-nowrap">
@@ -77,7 +131,7 @@ const NewRoom = () => {
         <main className="mt-3 col-auto col-md-9 col-xl-10">
           {message && showAlert && <Alert severity="info">{message}</Alert>}
           <div className="mt-5 border rounded shadow text-start pt-4 px-3">
-            <h2>Add New Room</h2>
+            <h2>{roomId ? "Edit Room" : "Add New Room"}</h2>
             <form>
               <div className="d-flex">
                 <div className="flex-fill">
@@ -144,9 +198,9 @@ const NewRoom = () => {
               <button
                 className="mt-5 mb-4 border-0 px-4 py-1 text-white bg-success"
                 type="button"
-                onClick={handleCreateRoom}
+                onClick={roomId ? handleUpdateRoom : handleCreateRoom}
               >
-                Create
+                {roomId ? "Update" : "Create"}
               </button>
             </form>
           </div>

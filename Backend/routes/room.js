@@ -4,8 +4,14 @@ const authMiddleware = require("../middleware/auth");
 
 const router = express.Router();
 
-// get all hotel
+// get all room
 router.get("/getRooms", roomController.getRooms);
+
+// get room
+router.get("/getRoom/:roomId", roomController.getRoom);
+
+// edit room
+router.put("/editRoom/:roomId", roomController.editRoom);
 
 // create room
 router.post(

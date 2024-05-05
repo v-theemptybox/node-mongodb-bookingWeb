@@ -49,7 +49,7 @@ const Room = () => {
     fetchData();
   }, [page, updateUI]);
 
-  const handleDeleteRoom = async (roomId) => {
+  const handleDeleteRoom = async () => {
     try {
       handleCloseDialog();
       const response = await fetch("http://localhost:5000/api/deleteRoom", {
@@ -133,6 +133,14 @@ const Room = () => {
                     <td>{room.price}</td>
                     <td>{room.maxPeople}</td>
                     <td>
+                      <button
+                        className="border border-dashed border-primary text-primary bg-white rounded me-2"
+                        onClick={() => {
+                          navigate(`/rooms/${room._id}`);
+                        }}
+                      >
+                        Edit
+                      </button>
                       <button
                         className="border border-dashed border-danger text-danger bg-white rounded"
                         onClick={() => {

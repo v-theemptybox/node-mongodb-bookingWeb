@@ -23,6 +23,7 @@ function App() {
       path: "/hotels",
       element: <Hotel />,
     },
+    { path: "/hotels/:hotelId", element: <NewRoom /> },
     {
       path: "/create-hotel",
       element: <NewHotel />,
@@ -31,6 +32,7 @@ function App() {
       path: "/rooms",
       element: <Room />,
     },
+    { path: "/rooms/:roomId", element: <NewRoom /> },
     {
       path: "/transactions",
       element: <Transaction />,

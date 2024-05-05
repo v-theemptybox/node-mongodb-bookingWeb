@@ -23,6 +23,17 @@ exports.getRooms = async (req, res, next) => {
   }
 };
 
+// get room
+exports.getRoom = async (req, res, next) => {
+  try {
+    const roomId = req.params.roomId;
+    const room = await Room.findOne({ _id: roomId });
+    res.status(200).json(room);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 // Create room
 exports.postRoom = async (req, res, next) => {
   try {
@@ -61,5 +72,36 @@ exports.deleteRoom = async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
+  }
+};
+
+// Edit room
+exports.editRoom = async (req, res, next) => {
+  try {
+    const roomId = req.params.roomId;
+    const updatedFields = req.body;
+
+    // check roomId and updatedFields existence
+    if (!roomId || Object.keys(updatedFields).length === 0) {
+      res.status(400).send("Invalid request data");
+      return;
+    }
+
+    // update room in db
+    const room = await Room.findByIdAndUpdate(roomId, updatedFields, {
+      new: true, // if true, return the modified document rather than the original
+    });
+
+    // check if any rooms are successfully updated
+    if (!room) {
+      res.status(404).send("Room not found");
+      return;
+    }
+
+    // returns updated room information
+    res.status(200).send("Updated!");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
   }
 };
