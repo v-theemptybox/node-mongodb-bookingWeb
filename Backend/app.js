@@ -34,9 +34,9 @@ app.use(
     saveUninitialized: false,
     store: store,
     // cookie: {
-    //   secure: false, // set true if use https
+    // secure: false, // set true if use https
     //   httpOnly: true, // prevent change cookie in JS on browser
-    //   maxAge: 24 * 60 * 60 * 1000, // cookie lifetime (1 day)
+    // maxAge: 24 * 60 * 60 * 1000, // cookie lifetime (1 day)
     //   sameSite: "none",
     // },
   })

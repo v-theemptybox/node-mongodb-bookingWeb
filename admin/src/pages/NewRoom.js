@@ -74,6 +74,7 @@ const NewRoom = () => {
       if (validateForm()) {
         const request = await fetch("http://localhost:5000/api/createRoom", {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
