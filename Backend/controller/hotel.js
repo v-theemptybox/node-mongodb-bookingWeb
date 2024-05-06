@@ -3,11 +3,21 @@ const Hotel = require("../models/Hotel");
 const Room = require("../models/Room"); // must be import to use populate!!!
 const Transaction = require("../models/Transaction");
 
+const paging = require("../utils/paging");
+const PAGE_SIZE = 8;
+
 // Get all hotels
 exports.getHotels = async (req, res, next) => {
   try {
     const hotels = await Hotel.find();
-    res.status(200).json(hotels);
+    const page = +req.query.page || 1;
+    const results = paging(hotels, PAGE_SIZE, page);
+
+    res.status(200).json({
+      results,
+      page,
+      totalPages: Math.ceil(hotels.length / PAGE_SIZE),
+    });
   } catch (error) {
     console.log(err);
   }

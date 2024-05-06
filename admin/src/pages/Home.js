@@ -11,7 +11,7 @@ const Home = () => {
           "http://localhost:5000/api/getTransactions"
         );
         const resData = await request.json();
-        setTransactions(resData);
+        setTransactions(resData.results);
       } catch (error) {
         console.log(error);
       }

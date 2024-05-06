@@ -1,23 +1,27 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import InfoBoard from "../components/InfoBoard";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 const Transaction = () => {
   const [transactions, setTransactions] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const request = await fetch(
-          "http://localhost:5000/api/getTransactions"
+        const response = await fetch(
+          `http://localhost:5000/api/getTransactions?page=${page}`
         );
-        const resData = await request.json();
-        setTransactions(resData);
+        const resData = await response.json();
+        setTransactions(resData.results);
+        setTotalPages(resData.totalPages);
       } catch (error) {
         console.log(error);
       }
     };
     fetchData();
-  }, []);
+  }, [page]);
 
   return (
     <div className="container-fluid">
@@ -72,6 +76,35 @@ const Transaction = () => {
                 ))}
               </tbody>
             </table>
+            <div className="d-flex justify-content-end">
+              <span>
+                {page} of {totalPages}
+              </span>
+              <button
+                className={`border-0 bg-white px-2 mx-1 mb-2 ${
+                  page === 1 ? "text-secondary disabled" : ""
+                }`}
+                onClick={() => {
+                  if (page !== 1) {
+                    setPage(page - 1);
+                  }
+                }}
+              >
+                <FontAwesomeIcon icon={faArrowLeft} />
+              </button>
+              <button
+                className={`border-0 bg-white px-2 mx-1 mb-2 ${
+                  page === totalPages ? "text-secondary disabled" : ""
+                }`}
+                onClick={() => {
+                  if (page !== totalPages) {
+                    setPage(page + 1);
+                  }
+                }}
+              >
+                <FontAwesomeIcon icon={faArrowRight} />
+              </button>
+            </div>
           </div>
         </main>
       </div>

@@ -8,6 +8,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Alert from "@mui/material/Alert";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 const Hotel = () => {
   const [hotels, setHotels] = useState([]);
@@ -17,6 +19,8 @@ const Hotel = () => {
   const [deleteHotelId, setDeleteHotelId] = useState("");
   const [severity, setSeverity] = useState("");
   const [showAlert, setShowAlert] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
   const navigate = useNavigate();
 
@@ -33,15 +37,18 @@ const Hotel = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const request = await fetch("http://localhost:5000/api/getHotels");
+        const request = await fetch(
+          `http://localhost:5000/api/getHotels?page=${page}`
+        );
         const resData = await request.json();
-        setHotels(resData);
+        setHotels(resData.results);
+        setTotalPages(resData.totalPages);
       } catch (error) {
         console.log(error);
       }
     };
     fetchData();
-  }, [updateUI]);
+  }, [updateUI, page]);
 
   // confirm delete a hotel
   const handleDeleteHotel = async () => {
@@ -150,6 +157,35 @@ const Hotel = () => {
                 ))}
               </tbody>
             </table>
+            <div className="d-flex justify-content-end">
+              <span>
+                {page} of {totalPages}
+              </span>
+              <button
+                className={`border-0 bg-white px-2 mx-1 mb-2 ${
+                  page === 1 ? "text-secondary disabled" : ""
+                }`}
+                onClick={() => {
+                  if (page !== 1) {
+                    setPage(page - 1);
+                  }
+                }}
+              >
+                <FontAwesomeIcon icon={faArrowLeft} />
+              </button>
+              <button
+                className={`border-0 bg-white px-2 mx-1 mb-2 ${
+                  page === totalPages ? "text-secondary disabled" : ""
+                }`}
+                onClick={() => {
+                  if (page !== totalPages) {
+                    setPage(page + 1);
+                  }
+                }}
+              >
+                <FontAwesomeIcon icon={faArrowRight} />
+              </button>
+            </div>
           </div>
         </main>
       </div>

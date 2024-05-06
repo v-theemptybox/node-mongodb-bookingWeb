@@ -2,6 +2,9 @@ const Transaction = require("../models/Transaction");
 const User = require("../models/User");
 const Hotel = require("../models/Hotel");
 
+const paging = require("../utils/paging");
+const PAGE_SIZE = 8;
+
 // get report info
 exports.getReports = async (req, res, next) => {
   try {
@@ -70,7 +73,15 @@ exports.getTransactions = async (req, res, next) => {
     const transactions = await Transaction.find()
       .populate("user")
       .populate("hotel");
-    res.status(200).json(transactions);
+
+    const page = +req.query.page || 1;
+    const results = paging(transactions, PAGE_SIZE, page);
+
+    res.status(200).json({
+      results,
+      page,
+      totalPages: Math.ceil(transactions.length / PAGE_SIZE),
+    });
   } catch (err) {
     console.log(err);
   }
