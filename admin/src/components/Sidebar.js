@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../App";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTableColumns,
@@ -14,6 +15,8 @@ import { useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const [user, setUser] = useState({});
+  const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,6 +27,7 @@ const Sidebar = () => {
         });
         const resData = await response.json();
         setUser(resData);
+        setIsLoggedIn(true);
       } catch (error) {
         console.error("Error fetching session:", error);
       }
@@ -39,8 +43,8 @@ const Sidebar = () => {
       });
       const resData = await request.text();
       console.log(resData);
-
-      navigate("/");
+      setIsLoggedIn(false);
+      navigate("/signIn");
     } catch (err) {
       console.log(err);
     }
@@ -48,8 +52,6 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* <div className="container-fluid">
-        <div className="row flex-nowrap"> */}
       <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-white border-end">
         <div className="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
           <a
@@ -67,6 +69,7 @@ const Sidebar = () => {
             <li className="nav-item mt-3">
               <p className="text-secondary">Main</p>
             </li>
+
             <li
               className="nav-item"
               onClick={() => {
@@ -80,132 +83,142 @@ const Sidebar = () => {
                 </span>
               </button>
             </li>
-            <li
-              className="nav-item"
-              onClick={() => {
-                navigate("/signUp");
-              }}
-            >
-              <button className="nav-link px-0">
-                <FontAwesomeIcon icon={faRegistered} />{" "}
-                <span className="ms-1 d-none d-sm-inline text-secondary">
-                  Register
-                </span>
-              </button>
-            </li>
-            <li
-              className="nav-item"
-              onClick={() => {
-                navigate("/signIn");
-              }}
-            >
-              <button className="nav-link px-0">
-                <FontAwesomeIcon icon={faSignIn} />{" "}
-                <span className="ms-1 d-none d-sm-inline text-secondary">
-                  Login
-                </span>
-              </button>
-            </li>
-            <li className="nav-item mt-3">
-              <p className="text-secondary ">List</p>
-            </li>
-            <li
-              className="nav-item"
-              onClick={() => {
-                navigate("/users");
-              }}
-            >
-              <button className="nav-link px-0">
-                <FontAwesomeIcon icon={faUser} />{" "}
-                <span className="ms-1 d-none d-sm-inline text-secondary">
-                  Users
-                </span>
-              </button>
-            </li>
-            <li
-              className="nav-item"
-              onClick={() => {
-                navigate("/hotels");
-              }}
-            >
-              <button className="nav-link px-0">
-                <FontAwesomeIcon icon={faHotel} />{" "}
-                <span className="ms-1 d-none d-sm-inline text-secondary">
-                  Hotels
-                </span>
-              </button>
-            </li>
-            <li
-              className="nav-item"
-              onClick={() => {
-                navigate("/rooms");
-              }}
-            >
-              <button className="nav-link px-0">
-                <FontAwesomeIcon icon={faBed} />{" "}
-                <span className="ms-1 d-none d-sm-inline text-secondary">
-                  Rooms
-                </span>
-              </button>
-            </li>
-            <li
-              className="nav-item"
-              onClick={() => {
-                navigate("/transactions");
-              }}
-            >
-              <button className="nav-link px-0">
-                <FontAwesomeIcon icon={faTruck} />{" "}
-                <span className="ms-1 d-none d-sm-inline text-secondary">
-                  Transactions
-                </span>
-              </button>
-            </li>
-            <li className="nav-item mt-3">
-              <p className="text-secondary ">New</p>
-            </li>
-            <li
-              className="nav-item"
-              onClick={() => {
-                navigate("/create-hotel");
-              }}
-            >
-              <button href="#" className="nav-link px-0">
-                <FontAwesomeIcon icon={faHotel} />{" "}
-                <span className="ms-1 d-none d-sm-inline text-secondary">
-                  New Hotel
-                </span>
-              </button>
-            </li>
-            <li
-              className="nav-item"
-              onClick={() => {
-                navigate("/create-room");
-              }}
-            >
-              <button href="#" className="nav-link px-0">
-                <FontAwesomeIcon icon={faBed} />{" "}
-                <span className="ms-1 d-none d-sm-inline text-secondary">
-                  New Room
-                </span>
-              </button>
-            </li>
-            <li className="nav-item mt-3">
-              <p className="text-secondary ">User</p>
-            </li>
-            <li
-              className="nav-item"
-              onClick={() => {
-                handleSignOut();
-              }}
-            >
-              <button href="#" className="nav-link px-0">
-                <FontAwesomeIcon icon={faRightFromBracket} />{" "}
-                <span className="ms-1 d-none d-sm-inline text-secondary">
-                  Logout
-                </span>
-              </button>
-            </li>
+
+            {!isLoggedIn && (
+              <>
+                <li
+                  className="nav-item"
+                  onClick={() => {
+                    navigate("/signUp");
+                  }}
+                >
+                  <button className="nav-link px-0">
+                    <FontAwesomeIcon icon={faRegistered} />{" "}
+                    <span className="ms-1 d-none d-sm-inline text-secondary">
+                      Register
+                    </span>
+                  </button>
+                </li>
+                <li
+                  className="nav-item"
+                  onClick={() => {
+                    navigate("/signIn");
+                  }}
+                >
+                  <button className="nav-link px-0">
+                    <FontAwesomeIcon icon={faSignIn} />{" "}
+                    <span className="ms-1 d-none d-sm-inline text-secondary">
+                      Login
+                    </span>
+                  </button>
+                </li>
+              </>
+            )}
+
+            {isLoggedIn && (
+              <>
+                <li className="nav-item mt-3">
+                  <p className="text-secondary ">List</p>
+                </li>
+                <li
+                  className="nav-item"
+                  onClick={() => {
+                    navigate("/users");
+                  }}
+                >
+                  <button className="nav-link px-0">
+                    <FontAwesomeIcon icon={faUser} />{" "}
+                    <span className="ms-1 d-none d-sm-inline text-secondary">
+                      Users
+                    </span>
+                  </button>
+                </li>
+                <li
+                  className="nav-item"
+                  onClick={() => {
+                    navigate("/hotels");
+                  }}
+                >
+                  <button className="nav-link px-0">
+                    <FontAwesomeIcon icon={faHotel} />{" "}
+                    <span className="ms-1 d-none d-sm-inline text-secondary">
+                      Hotels
+                    </span>
+                  </button>
+                </li>
+                <li
+                  className="nav-item"
+                  onClick={() => {
+                    navigate("/rooms");
+                  }}
+                >
+                  <button className="nav-link px-0">
+                    <FontAwesomeIcon icon={faBed} />{" "}
+                    <span className="ms-1 d-none d-sm-inline text-secondary">
+                      Rooms
+                    </span>
+                  </button>
+                </li>
+                <li
+                  className="nav-item"
+                  onClick={() => {
+                    navigate("/transactions");
+                  }}
+                >
+                  <button className="nav-link px-0">
+                    <FontAwesomeIcon icon={faTruck} />{" "}
+                    <span className="ms-1 d-none d-sm-inline text-secondary">
+                      Transactions
+                    </span>
+                  </button>
+                </li>
+                <li className="nav-item mt-3">
+                  <p className="text-secondary ">New</p>
+                </li>
+                <li
+                  className="nav-item"
+                  onClick={() => {
+                    navigate("/create-hotel");
+                  }}
+                >
+                  <button href="#" className="nav-link px-0">
+                    <FontAwesomeIcon icon={faHotel} />{" "}
+                    <span className="ms-1 d-none d-sm-inline text-secondary">
+                      New Hotel
+                    </span>
+                  </button>
+                </li>
+                <li
+                  className="nav-item"
+                  onClick={() => {
+                    navigate("/create-room");
+                  }}
+                >
+                  <button href="#" className="nav-link px-0">
+                    <FontAwesomeIcon icon={faBed} />{" "}
+                    <span className="ms-1 d-none d-sm-inline text-secondary">
+                      New Room
+                    </span>
+                  </button>
+                </li>
+                <li className="nav-item mt-3">
+                  <p className="text-secondary ">User</p>
+                </li>
+                <li
+                  className="nav-item"
+                  onClick={() => {
+                    handleSignOut();
+                  }}
+                >
+                  <button href="#" className="nav-link px-0">
+                    <FontAwesomeIcon icon={faRightFromBracket} />{" "}
+                    <span className="ms-1 d-none d-sm-inline text-secondary">
+                      Logout
+                    </span>
+                  </button>
+                </li>
+              </>
+            )}
           </ul>
           <hr />
           <div className="dropdown pb-4">
@@ -241,9 +254,6 @@ const Sidebar = () => {
           </div>
         </div>
       </div>
-      {/* <div className="col py-3">Content area...</div>
-        </div>
-      </div> */}
     </>
   );
 };

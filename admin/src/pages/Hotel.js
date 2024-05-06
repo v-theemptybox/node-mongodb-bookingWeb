@@ -49,6 +49,7 @@ const Hotel = () => {
       handleCloseDialog();
       const response = await fetch("http://localhost:5000/api/deleteHotel", {
         method: "DELETE",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -128,6 +129,14 @@ const Hotel = () => {
                     <td>{hotel.title}</td>
                     <td>{hotel.city}</td>
                     <td>
+                      <button
+                        className="border border-dashed border-primary text-primary bg-white rounded me-2"
+                        onClick={() => {
+                          navigate(`/hotels/${hotel._id}`);
+                        }}
+                      >
+                        Edit
+                      </button>
                       <button
                         className="border border-dashed border-danger text-danger bg-white rounded"
                         onClick={() => {

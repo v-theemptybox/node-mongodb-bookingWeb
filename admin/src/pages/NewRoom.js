@@ -18,7 +18,7 @@ const NewRoom = () => {
   // if roomId params exist then update room
   useEffect(() => {
     if (roomId) {
-      // Fetch thông tin phòng từ API khi component được load
+      // fetch room info from API when component load
       const fetchRoom = async () => {
         try {
           const response = await fetch(
@@ -72,7 +72,7 @@ const NewRoom = () => {
   const handleCreateRoom = async () => {
     try {
       if (validateForm()) {
-        const request = await fetch("http://localhost:5000/api/createRoom", {
+        const response = await fetch("http://localhost:5000/api/createRoom", {
           method: "POST",
           credentials: "include",
           headers: {
@@ -87,9 +87,12 @@ const NewRoom = () => {
           }),
         });
 
-        const resData = await request.text();
-        console.log(resData);
-        navigate("/rooms");
+        const resData = await response.text();
+        if (response.ok) {
+          navigate("/rooms");
+        } else {
+          showAlertMessage(resData);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -100,10 +103,11 @@ const NewRoom = () => {
   const handleUpdateRoom = async () => {
     try {
       if (validateForm()) {
-        const request = await fetch(
+        const response = await fetch(
           `http://localhost:5000/api/editRoom/${roomId}`,
           {
             method: "PUT",
+            credentials: "include",
             headers: {
               "Content-Type": "application/json",
             },
@@ -116,9 +120,12 @@ const NewRoom = () => {
             }),
           }
         );
-        const resData = await request.text();
-        console.log(resData);
-        navigate("/rooms");
+        const resData = await response.text();
+        if (response.ok) {
+          navigate("/rooms");
+        } else {
+          showAlertMessage(resData);
+        }
       }
     } catch (error) {
       console.log(error);

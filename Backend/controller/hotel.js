@@ -13,6 +13,18 @@ exports.getHotels = async (req, res, next) => {
   }
 };
 
+// get hotel by id
+exports.getHotel = async (req, res, next) => {
+  try {
+    const hotelId = req.params.hotelId;
+    const hotel = await Hotel.findOne({ _id: hotelId });
+    console.log(hotel);
+    res.status(200).json(hotel);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 // create hotel
 exports.postHotel = async (req, res, next) => {
   try {
@@ -31,7 +43,6 @@ exports.postHotel = async (req, res, next) => {
       rating: +req.body.rating,
     });
 
-    console.log(hotel);
     await hotel.save();
     res.status(201).send("Hotel created!");
   } catch (error) {
@@ -55,6 +66,37 @@ exports.deleteHotel = async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
+  }
+};
+
+// edit hotel
+exports.editHotel = async (req, res, next) => {
+  try {
+    const hotelId = req.params.hotelId;
+    const updatedFields = req.body;
+
+    // check hotelId and updatedFields existence
+    if (!hotelId || Object.keys(updatedFields).length === 0) {
+      res.status(400).send("Invalid request data");
+      return;
+    }
+
+    // update hotelId in db
+    const hotel = await Hotel.findByIdAndUpdate(hotelId, updatedFields, {
+      new: true, // if true, return the modified document rather than the original
+    });
+
+    // check if any rooms are successfully updated
+    if (!hotel) {
+      res.status(404).send("Hotel not found");
+      return;
+    }
+
+    // returns updated room information
+    res.status(200).send("Updated!");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
   }
 };
 

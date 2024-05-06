@@ -11,16 +11,24 @@ router.get("/getRooms", roomController.getRooms);
 router.get("/getRoom/:roomId", roomController.getRoom);
 
 // edit room
-router.put("/editRoom/:roomId", roomController.editRoom);
+router.put(
+  "/editRoom/:roomId",
+  authMiddleware.isAuthenticatedAdmin,
+  roomController.editRoom
+);
 
 // create room
 router.post(
   "/createRoom",
-  authMiddleware.isAuthenticated,
+  authMiddleware.isAuthenticatedAdmin,
   roomController.postRoom
 );
 
 // delete room
-router.delete("/deleteRoom", roomController.deleteRoom);
+router.delete(
+  "/deleteRoom",
+  authMiddleware.isAuthenticatedAdmin,
+  roomController.deleteRoom
+);
 
 module.exports = router;

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { AuthContext } from "../App";
 
 import { useNavigate } from "react-router-dom";
 
@@ -7,6 +8,7 @@ import Sidebar from "../components/Sidebar";
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const { setIsLoggedIn } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -25,6 +27,7 @@ const Login = () => {
       });
       const resData = await response.json();
       console.log(resData);
+      setIsLoggedIn(true);
       navigate("/");
     } catch (err) {
       console.log(err);

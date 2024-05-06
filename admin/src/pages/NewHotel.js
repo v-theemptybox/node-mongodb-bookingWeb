@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import List from "@mui/material/List";
 import Sidebar from "../components/Sidebar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Alert from "@mui/material/Alert";
 
 const NewHotel = () => {
@@ -15,13 +15,44 @@ const NewHotel = () => {
   const [title, setTitle] = useState("");
   const [cheapestPrice, setCheapestPrice] = useState("");
   const [featured, setFeatured] = useState(false);
-  const RATING = 0;
+  const [rating, setRating] = useState(0);
   const [rooms, setRooms] = useState([]);
   const [selectedRooms, setSelectedRooms] = useState([]);
   const [message, setMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
 
   const navigate = useNavigate();
+  const { hotelId } = useParams();
+
+  // if hotelId params exist then load hotel
+  useEffect(() => {
+    if (hotelId) {
+      // fetch hotel info from API when component load
+      const fetchRoom = async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:5000/api/getHotel/${hotelId}`
+          );
+          const hotelData = await response.json();
+          setName(hotelData.name);
+          setCity(hotelData.city);
+          setDistance(hotelData.distance);
+          setDesc(hotelData.desc);
+          setPhotos(hotelData.photos);
+          setType(hotelData.type);
+          setAddress(hotelData.address);
+          setTitle(hotelData.title);
+          setCheapestPrice(hotelData.cheapestPrice);
+          setFeatured(hotelData.featured);
+          setSelectedRooms(hotelData.rooms);
+          setRating(hotelData.rating);
+        } catch (error) {
+          console.error("Error fetching room data:", error);
+        }
+      };
+      fetchRoom();
+    }
+  }, [hotelId]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,27 +78,6 @@ const NewHotel = () => {
       !title ||
       !cheapestPrice
     ) {
-      console.log(
-        name +
-          "," +
-          city +
-          "," +
-          distance +
-          "," +
-          desc +
-          "," +
-          photos +
-          "," +
-          type +
-          "," +
-          address +
-          "," +
-          title +
-          "," +
-          cheapestPrice +
-          "," +
-          featured
-      );
       showAlertMessage("Please fill in all value!");
       return false;
     }
@@ -83,12 +93,13 @@ const NewHotel = () => {
     }, 3000);
   };
 
+  // create a hotel
   const handleCreateHotel = async () => {
     try {
       if (validateForm()) {
-        const request = await fetch("http://localhost:5000/api/createHotel", {
+        const response = await fetch("http://localhost:5000/api/createHotel", {
           method: "POST",
-
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -104,14 +115,16 @@ const NewHotel = () => {
             rooms: selectedRooms,
             title,
             type,
-            rating: RATING,
+            rating,
           }),
         });
 
-        const resData = await request.text();
-        console.log(resData);
-
-        navigate("/hotels");
+        const resData = await response.text();
+        if (response.ok) {
+          navigate("/hotels");
+        } else {
+          showAlertMessage(resData);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -130,6 +143,46 @@ const NewHotel = () => {
     });
   };
 
+  // update a hotel
+  const handleUpdateHotel = async () => {
+    try {
+      if (validateForm()) {
+        const response = await fetch(
+          `http://localhost:5000/api/editHotel/${hotelId}`,
+          {
+            method: "PUT",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name,
+              city,
+              address,
+              desc,
+              distance,
+              cheapestPrice,
+              featured,
+              photos,
+              rooms: selectedRooms,
+              title,
+              type,
+              rating,
+            }),
+          }
+        );
+        const resData = await response.text();
+        if (response.ok) {
+          navigate("/hotels");
+        } else {
+          showAlertMessage(resData);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="container-fluid">
       <div className="row flex-nowrap">
@@ -137,7 +190,7 @@ const NewHotel = () => {
         <main className="mt-3 col-auto col-md-9 col-xl-10">
           {message && showAlert && <Alert severity="info">{message}</Alert>}
           <div className="mt-5 border rounded shadow text-start pt-4 px-3">
-            <h2>Add New Hotel</h2>
+            <h2>{hotelId ? "Edit Hotel" : "Add New Hotel"}</h2>
             <form>
               <div className="d-flex">
                 <div className="flex-fill">
@@ -269,7 +322,7 @@ const NewHotel = () => {
                 onClick={handleCreateHotel}
                 type="button"
               >
-                Create
+                {hotelId ? "Update" : "Create"}
               </button>
             </form>
           </div>

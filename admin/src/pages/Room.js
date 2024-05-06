@@ -33,6 +33,7 @@ const Room = () => {
     setOpenDialog(false);
   };
 
+  // get all rooms
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -54,6 +55,7 @@ const Room = () => {
       handleCloseDialog();
       const response = await fetch("http://localhost:5000/api/deleteRoom", {
         method: "DELETE",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -79,12 +81,15 @@ const Room = () => {
     }
   };
 
+  // update severity by message state
   useEffect(() => {
     if (message) {
       if (message === "Deleted!") {
         setSeverity("success");
       } else if (message === "Delete fail!") {
         setSeverity("error");
+      } else {
+        setSeverity("info");
       }
     }
   }, [message]);
@@ -98,7 +103,9 @@ const Room = () => {
             <Alert severity={severity}>
               {severity === "success"
                 ? "Deleted successfully!"
-                : "Delete failed! This room has existed in at least one transaction or one hotel"}
+                : severity === "error"
+                ? "Delete failed! This room has existed in at least one transaction or one hotel"
+                : message}
             </Alert>
           )}
           <div className="mt-5 border rounded shadow text-start pt-4 px-3">
