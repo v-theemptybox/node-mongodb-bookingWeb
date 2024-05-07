@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
-import styles from "./ReserveForm.module.css";
+import React, { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../App";
 import { DateRange } from "react-date-range";
+import styles from "./ReserveForm.module.css";
 
 const ReserveForm = ({ props, onDataFromReserve }) => {
   const [totalCheck, setTotalCheck] = useState(0);
-  const [paymentMethod, setPaymentMethod] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("Cash");
   const [selectedRooms, setSelectedRooms] = useState([]);
+  const { user } = useContext(AuthContext);
 
   const [state, setState] = useState([
     {
@@ -14,8 +16,6 @@ const ReserveForm = ({ props, onDataFromReserve }) => {
       key: "selection",
     },
   ]);
-
-  const username = localStorage.getItem("username") ?? "";
 
   useEffect(() => {
     const sendDataToHotel = () => {
@@ -48,7 +48,7 @@ const ReserveForm = ({ props, onDataFromReserve }) => {
 
   const handleBooking = async () => {
     const transactionData = {
-      user: username,
+      user: user.username,
       hotel: props._id,
       room: selectedRooms,
       dateStart: state[0].startDate,
@@ -91,13 +91,28 @@ const ReserveForm = ({ props, onDataFromReserve }) => {
           <h3>Reserve</h3>
           <form className={styles.form}>
             <label>Your Full Name:</label>
-            <input type="text" placeholder="Full Name" />
+            <input
+              type="text"
+              placeholder="Full Name"
+              value={user.username}
+              readOnly
+            />
             <label>Your Email:</label>
-            <input type="text" placeholder="Email" />
+            <input
+              type="email"
+              placeholder="Email"
+              value={user.email}
+              readOnly
+            />
             <label>Your Phone Number:</label>
-            <input type="text" placeholder="Phone Number" />
+            <input
+              type="tel"
+              placeholder="Phone Number"
+              value={user.phoneNumber}
+              readOnly
+            />
             <label>Your Identity Card Number:</label>
-            <input type="text" placeholder="Card Number" />
+            <input type="text" placeholder="Card Number" readOnly />
           </form>
         </div>
       </div>

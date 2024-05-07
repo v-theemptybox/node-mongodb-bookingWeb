@@ -21,10 +21,10 @@
 .form > input {
   width: 100%;
   font-size: 16px;
-  line-height: 3;
+  line-height: 2;
   border-radius: 4px;
   border: 1px solid black;
-  padding: 5%;
+  padding: 2%;
 }
 
 .form > button {

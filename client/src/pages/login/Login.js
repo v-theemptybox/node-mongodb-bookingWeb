@@ -1,31 +1,31 @@
-import React, { useState } from "react";
-
+import React, { useContext, useState } from "react";
+import { AuthContext } from "../../App";
 import Navbar from "../../components/navbar/Navbar";
 import styles from "../register/register.module.css";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  const { setIsLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSignIn = async () => {
     try {
-      const request = await fetch("http://localhost:5000/user/signin", {
+      const response = await fetch("http://localhost:5000/user/signIn", {
         method: "POST",
-
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: email,
+          username: username,
           password: password,
         }),
       });
-      const resData = await request.text();
-
-      localStorage.setItem("username", resData);
+      const resData = await response.json();
+      console.log(resData);
+      setIsLoggedIn(true);
       navigate("/");
     } catch (err) {
       console.log(err);
@@ -39,14 +39,16 @@ const Login = () => {
         <form className={styles.form}>
           <h2>Login</h2>
           <input
-            type="email"
-            value={email}
+            type="text"
+            placeholder="Username"
+            value={username}
             onChange={(e) => {
-              setEmail(e.target.value);
+              setUsername(e.target.value);
             }}
           />
           <input
             type="password"
+            placeholder="Password"
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);

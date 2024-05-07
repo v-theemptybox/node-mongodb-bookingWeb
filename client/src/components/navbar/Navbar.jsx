@@ -1,10 +1,44 @@
 import { useNavigate } from "react-router-dom";
 import "./navbar.css";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../App";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const { isLoggedIn, setIsLoggedIn, user, setUser } = useContext(AuthContext);
 
-  const username = localStorage.getItem("username") ?? "";
+  // fetch user from current session
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/user/session", {
+          credentials: "include",
+        });
+        const resData = await response.json();
+        setUser(resData);
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error("Error fetching session:", error);
+      }
+    };
+    fetchSession();
+  }, [setIsLoggedIn, setUser]);
+
+  // logout
+  const handleSignOut = async () => {
+    try {
+      const request = await fetch("http://localhost:5000/user/signOut", {
+        method: "POST",
+        credentials: "include",
+      });
+      const resData = await request.text();
+      console.log(resData);
+      setIsLoggedIn(false);
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="navbar">
@@ -18,29 +52,28 @@ const Navbar = () => {
           Booking Website
         </span>
         <div className="navItems">
-          {username && <span>{username}</span>}
+          {isLoggedIn && <span>{user.username}</span>}
           <button
             className="navButton"
             onClick={() => {
-              if (username) {
+              if (isLoggedIn) {
                 navigate("/transaction");
               } else {
                 navigate("/register");
               }
             }}
           >
-            {username ? "Transactions" : "Register"}
+            {isLoggedIn ? "Transactions" : "Register"}
           </button>
           <button
             className="navButton"
             onClick={() => {
-              if (username) {
-                localStorage.removeItem("username");
-                navigate("/");
+              if (isLoggedIn) {
+                handleSignOut();
               } else navigate("/login");
             }}
           >
-            {username ? "Logout" : "Login"}
+            {isLoggedIn ? "Logout" : "Login"}
           </button>
         </div>
       </div>

@@ -113,21 +113,25 @@ exports.editHotel = async (req, res, next) => {
 // Get hotels by filter condition
 exports.postHotels = async (req, res, next) => {
   try {
-    const { cities, type, top3Rating } = req.body;
+    const { cities, type, top3Rating, maxPeople } = req.body;
 
     // by default will get entire hotel list
-    if (!cities && !type && !top3Rating) {
+    if (!cities && !type && !top3Rating && !maxPeople) {
       return res.status(200).json(await Hotel.find());
     }
 
     // get city amount by cities name
-    if (cities && Array.isArray(cities)) {
+    if (cities && Array.isArray(cities) && !maxPeople) {
       const hotelNumbers = [];
+      let hotels = [];
       for (const cityName of cities) {
         const count = await Hotel.countDocuments({ city: cityName });
         hotelNumbers.push(count);
+        const cityHotels = await Hotel.find({ city: cityName });
+        hotels = cityHotels;
       }
-      return res.status(200).json(hotelNumbers);
+
+      return res.status(200).json({ hotelNumbers, hotels });
     }
 
     // get city amount by cities type
@@ -146,6 +150,23 @@ exports.postHotels = async (req, res, next) => {
         .sort({ rating: -1 })
         .limit(top3Rating);
       return res.status(200).json(topHotels);
+    }
+
+    // get hotels by max people of room
+    let queryCity = {};
+    if (!cities.includes("") && cities.length === 1) {
+      queryCity.city = cities[0];
+    }
+    if (maxPeople) {
+      const hotels = await Hotel.find(queryCity).populate({
+        path: "rooms",
+        // if room have max people >= maxPeople
+        match: { maxPeople: { $gte: maxPeople } },
+      });
+
+      const filteredHotels = hotels.filter((hotel) => hotel.rooms.length > 0);
+
+      return res.status(200).json({ hotels: filteredHotels });
     }
   } catch (error) {
     console.log(error);

@@ -15,13 +15,15 @@ exports.getUsers = async (req, res, next) => {
 // sign up
 exports.signUp = async (req, res, next) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, email } = req.body;
     const salt = await bcrypt.genSalt();
 
     // if username duplicate with user in db
-    const existingUser = await User.findOne({ username });
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
-      return res.status(400).send("Username already exists");
+      return res
+        .status(400)
+        .json({ message: "Username or Email already exists" });
     }
 
     // if username is not in user db
@@ -31,7 +33,7 @@ exports.signUp = async (req, res, next) => {
       password: hashedPassword,
     });
     await newUser.save();
-    res.status(201).send("User created");
+    res.status(201).json({ message: "User created" });
   } catch (error) {
     console.error("Error in signup:", error);
     res.status(500).send("Internal Server Error");
@@ -46,13 +48,13 @@ exports.signIn = async (req, res, next) => {
     // if username is not in user db
     const user = await User.findOne({ username });
     if (!user) {
-      return res.status(404).send("User not found");
+      return res.status(404).json({ message: "User not found" });
     }
 
     // compare password
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
-      return res.status(401).send("Invalid password");
+      return res.status(401).json({ message: "Invalid password" });
     }
 
     // save user into session
@@ -60,8 +62,8 @@ exports.signIn = async (req, res, next) => {
     req.session.isLoggedIn = true;
 
     // if username and password is valid
-    console.log(req.session.user);
-    res.status(200).send(req.session.user);
+
+    res.status(200).json(req.session.user);
   } catch (error) {
     console.error("Error in sign in:", error);
     res.status(500).send("Internal Server Error");

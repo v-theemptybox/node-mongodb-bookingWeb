@@ -4,7 +4,7 @@ import Header from "../../components/header/Header";
 import Footer from "../../components/footer/Footer";
 
 import { useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { DateRange } from "react-date-range";
 import SearchItem from "../../components/searchItem/SearchItem";
@@ -15,6 +15,33 @@ const List = () => {
   const [date, setDate] = useState(location.state.date);
   const [openDate, setOpenDate] = useState(false);
   const [options, setOptions] = useState(location.state.options);
+  const [hotels, setHotels] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const request = await fetch("http://localhost:5000/api/postHotels", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cities: [destination],
+            maxPeople: options.adult + options.children,
+          }),
+        });
+
+        const resData = await request.json();
+        console.log(resData);
+        setHotels(resData.hotels);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, [destination, options]);
+
+  console.log(hotels);
 
   return (
     <div>
@@ -89,13 +116,24 @@ const List = () => {
             <button>Search</button>
           </div>
           <div className="listResult">
-            <SearchItem />
-            <SearchItem />
-            <SearchItem />
+            {hotels?.map((hotel, index) => (
+              <SearchItem
+                key={index}
+                name={hotel.name}
+                distance={hotel.distance}
+                img_url={hotel.photos[0]}
+                tag={hotel.title}
+                description={hotel.desc}
+                type={hotel.type}
+                free_cancel={hotel.featured}
+                rate={hotel.rating}
+                price={hotel.cheapestPrice}
+              />
+            ))}
           </div>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 };

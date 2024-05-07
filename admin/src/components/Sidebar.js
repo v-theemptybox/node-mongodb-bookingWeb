@@ -33,7 +33,7 @@ const Sidebar = () => {
       }
     };
     fetchSession();
-  }, []);
+  }, [setIsLoggedIn]);
 
   const handleSignOut = async () => {
     try {
@@ -181,7 +181,7 @@ const Sidebar = () => {
                     navigate("/create-hotel");
                   }}
                 >
-                  <button href="#" className="nav-link px-0">
+                  <button className="nav-link px-0">
                     <FontAwesomeIcon icon={faHotel} />{" "}
                     <span className="ms-1 d-none d-sm-inline text-secondary">
                       New Hotel
@@ -194,7 +194,7 @@ const Sidebar = () => {
                     navigate("/create-room");
                   }}
                 >
-                  <button href="#" className="nav-link px-0">
+                  <button className="nav-link px-0">
                     <FontAwesomeIcon icon={faBed} />{" "}
                     <span className="ms-1 d-none d-sm-inline text-secondary">
                       New Room
