@@ -37,3 +37,16 @@
   color: white;
   width: 80%;
 }
+
+.message-info {
+  position: fixed;
+  top: 10vh;
+  left: 5vw;
+  z-index: 99;
+  font-size: 18px;
+  border: 1px solid #356ec2;
+  background-color: lightskyblue;
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+}

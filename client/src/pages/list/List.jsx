@@ -119,6 +119,7 @@ const List = () => {
             {hotels?.map((hotel, index) => (
               <SearchItem
                 key={index}
+                hotelId={hotel._id}
                 name={hotel.name}
                 distance={hotel.distance}
                 img_url={hotel.photos[0]}

@@ -188,29 +188,27 @@ exports.postHotelById = async (req, res, next) => {
       hotel,
     });
 
-    console.log(transactions);
     const conflictTransactions = [];
 
     transactions.forEach((transaction) => {
       const tSDate = new Date(transaction.dateStart);
       const tEDate = new Date(transaction.dateEnd);
 
+      // conflict day in transaction (the user's booking date matches the booking date in the transactions)
       const sDateConflict = tSDate <= reqSDate && reqEDate <= tEDate;
       const eDateConflict = tSDate <= reqEDate && reqEDate <= tEDate;
       const sContainDateConflict = tSDate >= reqSDate && reqEDate >= tSDate;
       const eContainDateConflict = tEDate >= reqSDate && reqEDate >= tEDate;
 
-      console.log(sDateConflict + ": " + eDateConflict);
       if (
         sDateConflict ||
         eDateConflict ||
         sContainDateConflict ||
         eContainDateConflict
       )
+        // if there are any conflict dates, they will be added to the conflictTransactions array
         return conflictTransactions.push(transaction);
     });
-
-    console.log("this is" + conflictTransactions);
 
     // get room numbers from conflict transaction
     const bookedRoomNumbers = conflictTransactions

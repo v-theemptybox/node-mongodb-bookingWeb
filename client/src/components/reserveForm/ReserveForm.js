@@ -2,12 +2,18 @@ import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../App";
 import { DateRange } from "react-date-range";
 import styles from "./ReserveForm.module.css";
+import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 const ReserveForm = ({ props, onDataFromReserve }) => {
   const [totalCheck, setTotalCheck] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState("Cash");
   const [selectedRooms, setSelectedRooms] = useState([]);
   const { user } = useContext(AuthContext);
+  const [message, setMessage] = useState("");
+
+  const navigate = useNavigate();
 
   const [state, setState] = useState([
     {
@@ -61,15 +67,39 @@ const ReserveForm = ({ props, onDataFromReserve }) => {
     console.log(transactionData);
 
     try {
-      const request = await fetch("http://localhost:5000/api/postTransaction", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(transactionData),
-      });
-      const resData = await request.text();
-      console.log(resData);
+      if (!selectedRooms || selectedRooms.length === 0) {
+        setMessage("Please select at least one room");
+        setTimeout(() => {
+          setMessage("");
+        }, 3000);
+      } else {
+        const response = await fetch(
+          "http://localhost:5000/api/postTransaction",
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(transactionData),
+          }
+        );
+        const resData = await response.text();
+
+        if (response.ok) {
+          setMessage(resData);
+          setTimeout(() => {
+            setMessage("");
+            navigate("/transaction");
+          }, 2000);
+        } else {
+          console.log(resData);
+          setMessage(resData);
+          setTimeout(() => {
+            setMessage("");
+          }, 3000);
+        }
+      }
     } catch (err) {
       console.log(err);
     }
@@ -157,6 +187,13 @@ const ReserveForm = ({ props, onDataFromReserve }) => {
         </select>
         <button onClick={handleBooking}>Reserve Now</button>
       </div>
+      {message && (
+        <div className={styles["message-info"]}>
+          <FontAwesomeIcon icon={faInfoCircle} />
+          &nbsp;
+          {message}
+        </div>
+      )}
     </>
   );
 };

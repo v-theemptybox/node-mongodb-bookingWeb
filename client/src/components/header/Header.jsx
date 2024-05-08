@@ -47,6 +47,24 @@ const Header = ({ type }) => {
     navigate("/hotels", { state: { destination, date, options } });
   };
 
+  // capitalize first letter of destination(city)
+  const capitalizeFirstLetter = (string) => {
+    // spilt words between spaces
+    const words = string.split(" ");
+
+    const capitalizedWords = words.map((word) => {
+      // if the word has at least 1 character
+      if (word.length > 0) {
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      } else {
+        return "";
+      }
+    });
+
+    // Rejoin the string from words with the first letter capitalized
+    return capitalizedWords.join(" ");
+  };
+
   return (
     <div className="header">
       <div
@@ -94,7 +112,9 @@ const Header = ({ type }) => {
                   placeholder="Where are you going?"
                   className="headerSearchInput"
                   value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
+                  onChange={(e) =>
+                    setDestination(capitalizeFirstLetter(e.target.value))
+                  }
                 />
               </div>
               <div className="headerSearchItem">

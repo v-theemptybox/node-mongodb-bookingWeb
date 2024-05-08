@@ -28,7 +28,6 @@ const Hotel = () => {
     setDataFromReserve(data);
   };
 
-  // console.log(dataFromReserve.startDate);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -72,14 +71,16 @@ const Hotel = () => {
 
     if (direction === "l") {
       newSlideNumber =
-        slideNumber === 0 ? hotel.photos.length : slideNumber - 1;
+        slideNumber === 0 ? hotel.photos.length - 1 : slideNumber - 1;
     } else {
       newSlideNumber =
-        slideNumber === hotel.photos.length ? 0 : slideNumber + 1;
+        slideNumber === hotel.photos.length - 1 ? 0 : slideNumber + 1;
     }
 
     setSlideNumber(newSlideNumber);
   };
+
+  console.log(slideNumber);
 
   return (
     <div>
@@ -100,7 +101,7 @@ const Hotel = () => {
             />
             <div className="sliderWrapper">
               <img
-                src={hotel.photos[slideNumber].src}
+                src={hotel.photos[slideNumber]}
                 alt=""
                 className="sliderImg"
               />

@@ -1,6 +1,8 @@
+import { Link } from "react-router-dom";
 import "./searchItem.css";
 
 const SearchItem = ({
+  hotelId,
   name,
   distance,
   tag,
@@ -41,7 +43,9 @@ const SearchItem = ({
         <div className="siDetailTexts">
           <span className="siPrice">${price}</span>
           <span className="siTaxOp">Includes taxes and fees</span>
-          <button className="siCheckButton">See availability</button>
+          <Link to={hotelId} className="siCheckButton" target="_blank">
+            See availability
+          </Link>
         </div>
       </div>
     </div>

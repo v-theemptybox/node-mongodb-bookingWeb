@@ -319,7 +319,7 @@ const NewHotel = () => {
               </div>
               <button
                 className="mt-5 mb-4 border-0 px-4 py-1 text-white bg-success"
-                onClick={handleCreateHotel}
+                onClick={hotelId ? handleUpdateHotel : handleCreateHotel}
                 type="button"
               >
                 {hotelId ? "Update" : "Create"}

@@ -3,10 +3,13 @@ import { AuthContext } from "../../App";
 import Navbar from "../../components/navbar/Navbar";
 import Header from "../../components/header/Header";
 import styles from "./Transaction.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 const Transaction = () => {
   const [transactions, setTransactions] = useState([]);
   const { user } = useContext(AuthContext);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -15,6 +18,7 @@ const Transaction = () => {
           "http://localhost:5000/api/postTransactionById",
           {
             method: "POST",
+            credentials: "include",
             headers: {
               "Content-Type": "application/json",
             },
@@ -24,8 +28,14 @@ const Transaction = () => {
           }
         );
         const resData = await response.json();
-
-        setTransactions(resData);
+        if (response.ok) {
+          if (!resData || resData.length === 0) {
+            setMessage("There are currently no transactions");
+          }
+          setTransactions(resData);
+        } else {
+          setMessage(resData);
+        }
       } catch (err) {
         console.log(err);
       }
@@ -35,14 +45,20 @@ const Transaction = () => {
     } else {
       console.log("Please Login!");
     }
-  }, [user.username]);
+  }, [user]);
 
   return (
     <div>
       <Navbar />
       <Header type="list" />
-
       <div className="homeContainer">
+        {message && (
+          <div className={styles["message-info"]}>
+            <FontAwesomeIcon icon={faInfoCircle} />
+            &nbsp;
+            {message}
+          </div>
+        )}
         <div className={styles.transaction}>
           <h3>Your Transactions</h3>
 

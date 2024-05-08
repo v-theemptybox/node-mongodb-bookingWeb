@@ -8,9 +8,17 @@ const router = express.Router();
 router.get("/getReports", transactionController.getReports);
 
 // create transaction
-router.post("/postTransaction", transactionController.postTransaction);
+router.post(
+  "/postTransaction",
+  authMiddleware.isAuthenticated,
+  transactionController.postTransaction
+);
 // get transaction by id
-router.post("/postTransactionById", transactionController.postTransactionById);
+router.post(
+  "/postTransactionById",
+  authMiddleware.isAuthenticated,
+  transactionController.postTransactionById
+);
 // get all transactions
 router.get("/getTransactions", transactionController.getTransactions);
 

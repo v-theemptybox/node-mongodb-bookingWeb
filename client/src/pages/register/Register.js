@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
 import styles from "./register.module.css";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -9,29 +11,79 @@ const Register = () => {
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
 
+  const validateForm = () => {
+    if (!username || !password || !fullName || !phoneNumber || !email) {
+      setMessage("Please fill in all value");
+      setTimeout(() => {
+        setMessage("");
+      }, 3000);
+      return false;
+    }
+    if (password.length < 6) {
+      setMessage("Password must be at least 6 characters");
+      setTimeout(() => {
+        setMessage("");
+      }, 3000);
+      return false;
+    }
+
+    if (phoneNumber.length < 10) {
+      setMessage("Phone number must have 10 digits");
+      setTimeout(() => {
+        setMessage("");
+      }, 3000);
+      return false;
+    }
+
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    if (!emailRegex.test(email)) {
+      setMessage("Invalid email address");
+      setTimeout(() => {
+        setMessage("");
+      }, 3000);
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSignUp = async () => {
     try {
-      const response = await fetch("http://localhost:5000/user/signUp", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          password,
-          fullName,
-          phoneNumber,
-          email,
-          isAdmin: false,
-        }),
-      });
-      const resData = await response.text();
-      console.log(resData);
-      navigate("/login");
+      if (validateForm()) {
+        const response = await fetch("http://localhost:5000/user/signUp", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            password,
+            fullName,
+            phoneNumber,
+            email,
+            isAdmin: false,
+          }),
+        });
+        const resData = await response.json();
+        if (response.ok) {
+          setMessage(resData.message);
+          setTimeout(() => {
+            setMessage("");
+            navigate("/login");
+          }, 2000);
+        } else {
+          console.log(resData.message);
+          setMessage(resData.message);
+          setTimeout(() => {
+            setMessage("");
+          }, 3000);
+        }
+      }
     } catch (err) {
       console.log(err);
     }
@@ -40,6 +92,13 @@ const Register = () => {
   return (
     <>
       <Navbar />
+      {message && (
+        <div className={styles["message-info"]}>
+          <FontAwesomeIcon icon={faInfoCircle} />
+          &nbsp;
+          {message}
+        </div>
+      )}
       <div className={styles["form-cover"]}>
         <form className={styles.form}>
           <h2>Sign Up</h2>
@@ -80,7 +139,7 @@ const Register = () => {
             type="tel"
             value={phoneNumber}
             onChange={(e) => {
-              setPhoneNumber(e.target.value);
+              setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10));
             }}
           />
           <button type="button" onClick={handleSignUp}>
