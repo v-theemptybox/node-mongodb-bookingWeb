@@ -28,7 +28,6 @@ exports.getHotel = async (req, res, next) => {
   try {
     const hotelId = req.params.hotelId;
     const hotel = await Hotel.findOne({ _id: hotelId });
-    console.log(hotel);
     res.status(200).json(hotel);
   } catch (error) {
     console.log(error);
@@ -110,28 +109,24 @@ exports.editHotel = async (req, res, next) => {
   }
 };
 
-// Get hotels by filter condition
+// Get hotels by filter condition for homepage(client)
 exports.postHotels = async (req, res, next) => {
   try {
-    const { cities, type, top3Rating, maxPeople } = req.body;
+    const { cities, type, top3Rating } = req.body;
 
     // by default will get entire hotel list
-    if (!cities && !type && !top3Rating && !maxPeople) {
+    if (!cities && !type && !top3Rating) {
       return res.status(200).json(await Hotel.find());
     }
 
-    // get city amount by cities name
-    if (cities && Array.isArray(cities) && !maxPeople) {
+    if (cities && Array.isArray(cities)) {
       const hotelNumbers = [];
-      let hotels = [];
+
       for (const cityName of cities) {
         const count = await Hotel.countDocuments({ city: cityName });
         hotelNumbers.push(count);
-        const cityHotels = await Hotel.find({ city: cityName });
-        hotels = cityHotels;
       }
-
-      return res.status(200).json({ hotelNumbers, hotels });
+      return res.status(200).json(hotelNumbers);
     }
 
     // get city amount by cities type
@@ -152,22 +147,7 @@ exports.postHotels = async (req, res, next) => {
       return res.status(200).json(topHotels);
     }
 
-    // get hotels by max people of room
-    let queryCity = {};
-    if (!cities.includes("") && cities.length === 1) {
-      queryCity.city = cities[0];
-    }
-    if (maxPeople) {
-      const hotels = await Hotel.find(queryCity).populate({
-        path: "rooms",
-        // if room have max people >= maxPeople
-        match: { maxPeople: { $gte: maxPeople } },
-      });
-
-      const filteredHotels = hotels.filter((hotel) => hotel.rooms.length > 0);
-
-      return res.status(200).json({ hotels: filteredHotels });
-    }
+    // get city amount by cities name
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Internal server error" });
@@ -194,7 +174,13 @@ exports.postHotelById = async (req, res, next) => {
       const tSDate = new Date(transaction.dateStart);
       const tEDate = new Date(transaction.dateEnd);
 
-      // conflict day in transaction (the user's booking date matches the booking date in the transactions)
+      // format time to 00:00:00:00
+      const formatDate = (date) => new Date(date.setHours(0, 0, 0, 0));
+      formatDate(tSDate);
+      formatDate(tEDate);
+      formatDate(reqSDate);
+      formatDate(reqEDate);
+
       const sDateConflict = tSDate <= reqSDate && reqEDate <= tEDate;
       const eDateConflict = tSDate <= reqEDate && reqEDate <= tEDate;
       const sContainDateConflict = tSDate >= reqSDate && reqEDate >= tSDate;
@@ -232,5 +218,103 @@ exports.postHotelById = async (req, res, next) => {
     res.status(200).json(hotelWithAvailableRooms);
   } catch (err) {
     console.log(err);
+  }
+};
+
+exports.searchHotels = async (req, res, next) => {
+  try {
+    // by default maxPeople = 1, cities =[""], startDate and endDate = today;
+    const { cities, startDate, endDate, maxPeople, roomNo } = req.body;
+
+    // get hotels by max people of room
+    let queryCity = {};
+    if (!cities.includes("") && cities.length === 1) {
+      queryCity.city = cities[0];
+    }
+
+    const hotels = await Hotel.find(queryCity).populate({
+      path: "rooms",
+      // if room have max people >= maxPeople
+      match: { maxPeople: { $gte: maxPeople } },
+    });
+
+    // filter hotels by maxPeople, roomNo(room number) and city name
+    const filteredHotels = hotels.filter(
+      (hotel) => hotel.rooms.length >= roomNo
+    );
+
+    // find conflict transactions
+    const transactions = await Transaction.find({
+      $or: [
+        { dateStart: { $gte: startDate, $lte: endDate } },
+        { dateEnd: { $gte: startDate, $lte: endDate } },
+      ],
+      hotel: filteredHotels,
+    });
+    // if there is no conflicted transaction
+    if (!transactions || transactions.length === 0) {
+      res.status(200).json(filteredHotels);
+    } else {
+      // get all hotelIds in transactions
+      const hotelIdsInTransactions = transactions.map(
+        (transaction) => transaction.hotel
+      );
+
+      // find hotels in transactions
+      //============ NOTE: MONGOOSE AUTOMATICALLY DETECTS DUPLICATE IDS AND WILL NOT FIND DUPLICATE IDS
+      const hotelsInTransactions = await Hotel.find({
+        _id: hotelIdsInTransactions,
+      }).populate("rooms");
+      let roomObj = {};
+      transactions.forEach((transaction) => {
+        transaction.room.forEach((room) => {
+          if (!roomObj[room.roomId]) {
+            // if roomId does not exist, create a new room
+            roomObj[room.roomId] = {
+              roomId: room.roomId,
+              roomNumbers: [room.roomNumber],
+            };
+          } else {
+            // if roomId already exists, just add roomNumber to the roomNumbers array
+            roomObj[room.roomId].roomNumbers.push(room.roomNumber);
+          }
+        });
+      });
+      // convert roomObj to room array
+      let roomArr = Object.values(roomObj);
+      const conflictedRoomsInfo = [];
+      hotelsInTransactions.forEach((hotel) => {
+        hotel.rooms.forEach((room) => {
+          roomArr.forEach((arrRoom) => {
+            // if room._id = roomId of roomArr then continue check roomNumbers
+            if (room._id.toString() === arrRoom.roomId) {
+              if (
+                // if roomNumbers of room = roomNumbers roomArr
+                JSON.stringify(room.roomNumbers.sort()) ===
+                JSON.stringify(arrRoom.roomNumbers.sort())
+              ) {
+                // if both conditions are true, add that conflict room information (hotelId) to the conflictedRooms array.
+                conflictedRoomsInfo.push(hotel._id);
+              }
+            }
+          });
+        });
+      });
+
+      if (!cities.includes("") && cities.length === 1) {
+        const newFilteredHotels = await Hotel.find({
+          _id: { $nin: conflictedRoomsInfo },
+          city: cities[0],
+        });
+        res.status(200).json(newFilteredHotels);
+      } else {
+        const newFilteredHotels = await Hotel.find({
+          _id: { $nin: conflictedRoomsInfo },
+        });
+        res.status(200).json(newFilteredHotels);
+      }
+    }
+  } catch (error) {
+    console.log(error);
   }
 };

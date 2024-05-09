@@ -12,6 +12,8 @@ const ReserveForm = ({ props, onDataFromReserve }) => {
   const [selectedRooms, setSelectedRooms] = useState([]);
   const { user } = useContext(AuthContext);
   const [message, setMessage] = useState("");
+  const [days, setDays] = useState(1);
+  const [roomsPrice, setRoomsPrice] = useState(0);
 
   const navigate = useNavigate();
 
@@ -27,7 +29,10 @@ const ReserveForm = ({ props, onDataFromReserve }) => {
     const sendDataToHotel = () => {
       const startDate = state[0].startDate;
       const endDate = state[0].endDate;
-
+      let timeDiff = endDate.getTime() - startDate.getTime();
+      let daysDiff = Math.round(timeDiff / (1000 * 3600 * 24));
+      setDays(daysDiff + 1);
+      setTotalCheck(0);
       onDataFromReserve({ startDate, endDate });
     };
 
@@ -41,16 +46,21 @@ const ReserveForm = ({ props, onDataFromReserve }) => {
         ...prevSelectedRooms,
         { roomId: roomId, roomNumber: number },
       ]);
-      setTotalCheck((prevTotal) => prevTotal + price);
+      setRoomsPrice((prevTotal) => prevTotal + price);
     } else {
       setSelectedRooms((prevSelectedRooms) =>
         prevSelectedRooms.filter(
           (room) => !(room.roomId === roomId && room.roomNumber === number)
         )
       );
-      setTotalCheck((prevTotal) => prevTotal - price);
+      setRoomsPrice((prevTotal) => prevTotal - price);
     }
   };
+
+  useEffect(() => {
+    // calculate totalCheck when selectedRooms or days change
+    setTotalCheck(roomsPrice * days);
+  }, [roomsPrice, selectedRooms, days]);
 
   const handleBooking = async () => {
     const transactionData = {

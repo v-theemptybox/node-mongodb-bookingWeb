@@ -20,7 +20,7 @@ const List = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const request = await fetch("http://localhost:5000/api/postHotels", {
+        const request = await fetch("http://localhost:5000/api/searchHotels", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -28,20 +28,21 @@ const List = () => {
           body: JSON.stringify({
             cities: [destination],
             maxPeople: options.adult + options.children,
+            roomNo: options.room,
+            startDate: date[0].startDate,
+            endDate: date[0].endDate,
           }),
         });
 
         const resData = await request.json();
-        console.log(resData);
-        setHotels(resData.hotels);
+
+        setHotels(resData);
       } catch (err) {
         console.log(err);
       }
     };
     fetchData();
-  }, [destination, options]);
-
-  console.log(hotels);
+  }, [destination, options, date]);
 
   return (
     <div>
@@ -59,8 +60,8 @@ const List = () => {
               <label>Check-in Date</label>
               <span onClick={() => setOpenDate(!openDate)}>{`${format(
                 date[0].startDate,
-                "MM/dd/yyyy"
-              )} to ${format(date[0].endDate, "MM/dd/yyyy")}`}</span>
+                "dd/MM/yyyy"
+              )} to ${format(date[0].endDate, "dd/MM/yyyy")}`}</span>
               {openDate && (
                 <DateRange
                   onChange={(item) => setDate([item.selection])}

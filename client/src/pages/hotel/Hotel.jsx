@@ -24,7 +24,6 @@ const Hotel = () => {
   let { id: hotelId } = useParams();
 
   const handleDataFromReserve = (data) => {
-    console.log(data);
     setDataFromReserve(data);
   };
 
@@ -79,8 +78,6 @@ const Hotel = () => {
 
     setSlideNumber(newSlideNumber);
   };
-
-  console.log(slideNumber);
 
   return (
     <div>

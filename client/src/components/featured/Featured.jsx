@@ -21,7 +21,7 @@ const Featured = () => {
         });
 
         const resData = await request.json();
-        setCityNumber(resData.hotelNumbers);
+        setCityNumber(resData);
       } catch (err) {
         console.log(err);
       }
@@ -30,12 +30,7 @@ const Featured = () => {
   }, []);
   return (
     <div className="featured">
-      <div
-        className="featuredItem"
-        onClick={() => {
-          navigate("/hotels");
-        }}
-      >
+      <div className="featuredItem">
         <img src="/images/HN.jpg" alt="" className="featuredImg" />
         <div className="featuredTitles">
           <h1>Ha Noi</h1>

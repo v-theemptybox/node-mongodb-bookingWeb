@@ -44,7 +44,6 @@ exports.postRoom = async (req, res, next) => {
       maxPeople: +req.body.maxPeople,
       roomNumbers: req.body.roomNumbers,
     });
-    console.log(room);
     await room.save();
     res.status(201).send("Room created!");
   } catch (error) {

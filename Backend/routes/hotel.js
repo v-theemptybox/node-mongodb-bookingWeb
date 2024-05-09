@@ -30,6 +30,8 @@ router.delete(
   hotelController.deleteHotel
 );
 
+router.post("/searchHotels", hotelController.searchHotels);
+
 router.post("/postHotels", hotelController.postHotels);
 router.post("/postHotels/:hotelId", hotelController.postHotelById);
 

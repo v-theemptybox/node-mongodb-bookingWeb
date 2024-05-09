@@ -39,7 +39,15 @@ const NewRoom = () => {
   }, [roomId]);
 
   const validateForm = () => {
-    if (!title || !price || !roomNumbers || !desc || !maxPeople) {
+    if (
+      !title ||
+      !price ||
+      !roomNumbers ||
+      roomNumbers.length === 0 ||
+      (roomNumbers.length === 1 && roomNumbers.includes("")) ||
+      !desc ||
+      !maxPeople
+    ) {
       showAlertMessage("Please fill in all value!");
       return false;
     }

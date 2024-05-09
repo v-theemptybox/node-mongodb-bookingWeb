@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheckCircle, faX } from "@fortawesome/free-solid-svg-icons";
 
 const User = () => {
   const [users, setUsers] = useState([]);
@@ -40,7 +42,16 @@ const User = () => {
                     <td>{user.fullName}</td>
                     <td>{user.phoneNumber}</td>
                     <td>{user.email}</td>
-                    <td>{user.isAdmin}</td>
+                    <td>
+                      {user.isAdmin ? (
+                        <FontAwesomeIcon
+                          className="text-success"
+                          icon={faCheckCircle}
+                        />
+                      ) : (
+                        <FontAwesomeIcon className="text-danger" icon={faX} />
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>

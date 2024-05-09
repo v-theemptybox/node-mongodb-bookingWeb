@@ -74,6 +74,8 @@ const NewHotel = () => {
       !distance ||
       !desc ||
       !photos ||
+      photos.length === 0 ||
+      (photos.length === 1 && photos.includes("")) ||
       !address ||
       !title ||
       !cheapestPrice
@@ -183,6 +185,24 @@ const NewHotel = () => {
     }
   };
 
+  // capitalize first letter of city
+  const capitalizeFirstLetter = (string) => {
+    // spilt words between spaces
+    const words = string.split(" ");
+
+    const capitalizedWords = words.map((word) => {
+      // if the word has at least 1 character
+      if (word.length > 0) {
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      } else {
+        return "";
+      }
+    });
+
+    // Rejoin the string from words with the first letter capitalized
+    return capitalizedWords.join(" ");
+  };
+
   return (
     <div className="container-fluid">
       <div className="row flex-nowrap">
@@ -206,9 +226,11 @@ const NewHotel = () => {
                   <input
                     className="w-50 border-0 border-bottom border-2 border-dark-subtle"
                     type="text"
-                    placeholder="ex: New York"
+                    placeholder="ex: Ha Noi"
                     value={city}
-                    onChange={(e) => setCity(e.target.value)}
+                    onChange={(e) =>
+                      setCity(capitalizeFirstLetter(e.target.value))
+                    }
                   />
                   <label className="w-100 mt-4">
                     Distance from City Center
